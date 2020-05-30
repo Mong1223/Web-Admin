@@ -1,0 +1,15 @@
+.lvl2 {
+  display: none;
+  margin-left: 0.6rem;
+}
+
+a {
+  text-decoration: none;
+  font-family: Calibri;
+  color: #5a6268;
+}
+
+.lvl2.active {
+  display: block;
+}
+
