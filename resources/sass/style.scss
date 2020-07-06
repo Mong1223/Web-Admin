@@ -4,9 +4,13 @@
 }
 a{
     text-decoration: none;
-    font-family: Calibri;
+    font-family: inherit;
+    font-size: inherit;
     color: #5a6268;
 }
 .lvl2.active{
     display: block;
+}
+.body{
+    background: red;
 }

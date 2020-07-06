@@ -3,10 +3,10 @@
 <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
     <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="/">TPU</a>
     <ul class="navbar-nav px-3">
-        
-            <div class="dropdown">
+
+            <!--<div class="dropdown">
                 <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    {{Auth::user()->name }}
+
                 </button>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
 
@@ -15,7 +15,7 @@
                        <button type="submit">Logout</button>
                     </form>
                 </div>
-            </div>
+            </div>-->
 
 
     </ul>
