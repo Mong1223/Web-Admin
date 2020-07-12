@@ -13,7 +13,7 @@ class MenuController extends Controller
     public function GetMenu(){
         $menu = DB::select('SELECT * FROM Menu');
         $data['menu'] = [];
-        $titles = ['ID','Подчинённый','УровеньМеню','Тип','Ссылка','ПорядокОтображения','ЯзыкПодчинённого','IDРодителя','Родитель'];
+        $titles = ['ID','Подчинённый','УровеньМеню','ЯзыкПодчинённого','Тип','Ссылка','ПорядокОтображения','IDСтатьи','IDРодителя','Родитель'];
         for($i=0;$i<Count($menu);$i++){
             $data['menu'][$i] = [];
             $j = 0;
@@ -28,7 +28,7 @@ class MenuController extends Controller
     public function GetNews($name1){
         $menu = DB::select('SELECT * FROM Menu');
         $data['menu'] = [];
-        $titles = ['ID','Подчинённый','УровеньМеню','Тип','Ссылка','ПорядокОтображения','ЯзыкПодчинённого','IDРодителя','Родитель'];
+        $titles = ['ID','Подчинённый','УровеньМеню','ЯзыкПодчинённого','Тип','Ссылка','ПорядокОтображения','IDСтатьи','IDРодителя','Родитель'];
         for($i=0;$i<Count($menu);$i++){
             $data['menu'][$i] = [];
             $j = 0;
@@ -37,8 +37,18 @@ class MenuController extends Controller
                 $j++;
             }
         }
+        $listpages = DB::select('Select DISTINCT Страница, [Пункт меню] From ArticlesInfo Where [Пункт меню]=?', [$name1]);
+        $titles = ['Страница','ПунктМеню'];
+        for($i=0;$i<Count($listpages);$i++){
+            $data['listpages'][$i] = [];
+            $j = 0;
+            foreach ($listpages[$i] as $element){
+                $data['listpages'][$i][$titles[$j]] = $element;
+                $j++;
+            }
+        }
+        $titles = ['Страница','ПунктМеню','Язык','IDСтатьи','НазваниеСтатьи','ТекстСтатьи','ВремяСозданияСтатьи','КраткаяВерсия'];
         $listnews = DB::select('Select * From ArticlesInfo Where [Пункт меню]=?', [$name1]);
-        $titles = ['Страница','ПунктМеню','Язык','IDСтатьи','НазваниеСтатьи','ТекстСтатьи','ВремяСозданияСтатьи'];
         for($i=0;$i<Count($listnews);$i++){
             $data['listnews'][$i] = [];
             $j = 0;
@@ -48,5 +58,26 @@ class MenuController extends Controller
             }
         }
         return view ('index',['data'=>$data]);
+    }
+    public function CreateNews($PageName){
+        $Page = DB::select('SELECT DISTINCT Страница, [Пункт меню], Язык FROM ArticlesInfo WHERE Страница=?',[$PageName]);
+        $titles = ['Страница','ПунктМеню','Язык'];
+        $j=0;
+        $data = [];
+        for($i=0;$i<Count($Page);$i++){
+            $j = 0;
+            foreach ($Page[$i] as $element){
+                $data[$titles[$j]] = $element;
+                $j++;
+            }
+        }
+        $Page = $data;
+        return view('CreateNews',['Page'=>$Page]);
+    }
+    public function SaveNews(Request $request){
+        DB::statement('EXECUTE AddArticle ?,?,?,?,?',[$request->input('name'),$request->input('text'),
+            $request->input('topic'),$request->input('language'),$request->input('description')]);
+        DB::statement('EXECUTE AddArticlesInPages ?, ?',[$request->input('page'),$request->input('name')]);
+        return redirect()->route('GetNews',$request->input('menupunct'));
     }
 }
