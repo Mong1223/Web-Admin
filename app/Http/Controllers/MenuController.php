@@ -80,4 +80,24 @@ class MenuController extends Controller
         DB::statement('EXECUTE AddArticlesInPages ?, ?',[$request->input('page'),$request->input('name')]);
         return redirect()->route('GetNews',$request->input('menupunct'));
     }
+    public function SaveImage(Request $request){
+        $file = $request->file;
+        $filename = $file->getClientOriginalName();
+        $file->storeAs('images', $filename);
+        $path = storage_path() . "\app\images\\" . $filename;
+        $imagedata = unpack("H*hex",file_get_contents($path));
+        $imagedata = '0x'.$imagedata['hex'];
+        //dd($imagedata[1]);
+        $filecontent = base64_encode($file->openFile()->fread($file->getSize()));
+        //dd($filecontent);
+        $filename = $file->getClientOriginalName();
+        DB::statement('INSERT INTO Медиа(Данные) VALUES(CONVERT(VARBINARY(MAX),?));',[$imagedata]);
+        $url = 'http://109.123.155.178:8080/media/img/';
+        $id = DB::select('SELECT [Id Медиа] FROM [Медиа] ORDER BY [Время создания] DESC');
+        foreach ($id[0] as $elem){
+            $id = $elem;
+        }
+        $url = $url . $id;
+        return $url;
+    }
 }

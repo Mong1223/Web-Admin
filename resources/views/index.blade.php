@@ -1,47 +1,5 @@
 @extends('layouts.master')
 @section('content')
-    <?php
-        function menufunc($data, $i,$alldata){
-            if($data['УровеньМеню']==1){
-                echo '<li class="nav-item" onclick="submenushow({{$i}})" style="cursor: pointer">';
-                if($data['Тип']=='LINKS_LIST'){
-                    echo '<li class="nav-item" onclick="submenushow({{',$i,'}})" style="cursor: pointer">';
-                    if($data['Тип']=='FEED_LIST'){
-                        echo '<a href="{{',route('GetNews', $data['Подчинённый']),'}}" style="text-decoration: none; color: #5a6268">';
-                        echo $data['Подчинённый'];
-                        echo '</a>';
-                    }
-                    else{
-                        echo $data['Подчинённый'];
-                    }
-                    echo '</li>';
-                    foreach($alldata as $alldatum){
-
-                    }
-                }
-                echo '</div>';
-            }
-            if($data['УровеньМеню']!=1){
-                echo '<div id="lvl2{{',$i,'}}" class="lvl2">';
-                if($data['Тип']=='LINKS_LIST'){
-                    echo '<li class="nav-item" onclick="submenushow({{',$i,'}})" style="cursor: pointer">';
-                    if($data['Тип']=='FEED_LIST'){
-                        echo '<a href="{{',route('GetNews', $data['Подчинённый']),'}}" style="text-decoration: none; color: #5a6268">';
-                        echo $data['Подчинённый'];
-                        echo '</a>';
-                    }
-                    else{
-                        echo $data['Подчинённый'];
-                    }
-                    echo '</li>';
-                    foreach($alldata as $alldatum){
-
-                    }
-                }
-                echo '</div>';
-            }
-        }
-    ?>
     <div class="container-fluid">
         <div class="row">
             <nav class="col-md-2 d-none d-md-block bg-light sidebar">
@@ -74,7 +32,7 @@
                                                     @if($elem3['Родитель']==$data['menu'][$j]['Подчинённый'])
                                                         <li class="nav-item" style="cursor: pointer">
                                                             @if($elem3['Тип']=='FEED_LIST')
-                                                                <a href="{{route('GetNews', $elem3['Подчинённый'])}}" style="text-decoration: none; color: #5a6268">
+                                                                <a class="getnews" href="{{route('GetNews', $elem3['Подчинённый'])}}" style="text-decoration: none; color: #5a6268">
                                                                     {{$elem3['Подчинённый']}}
                                                                 </a>
                                                             @endif
@@ -158,7 +116,6 @@
                 @endisset
                 </div>
             </main>
-
         </div>
     </div>
 @endsection

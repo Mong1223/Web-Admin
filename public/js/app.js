@@ -47461,7 +47461,40 @@ module.exports = function(module) {
 __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 
 $(document).ready(function () {
-  $('#redactor').summernote();
+  $('#redactor').summernote({
+    height: 500,
+    width: 800,
+    callbacks: {
+      onImageUpload: function onImageUpload(files, editor, welEditable) {
+        sendFile(files[0], editor, welEditable);
+      }
+    }
+  });
+
+  function sendFile(file, editor, welEditable) {
+    datafile = new FormData();
+    datafile.append("file", file);
+    $.ajax({
+      headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+      },
+      data: datafile,
+      type: "POST",
+      url: '/SaveNews/SaveImage',
+      cache: false,
+      contentType: false,
+      processData: false,
+      async: false,
+      success: function success(url) {
+        $('#testing').html(url);
+        editor.insertImage(welEditable, url);
+      },
+      error: function error(jqXHR, textStatus, errorThrown) {
+        alert(textStatus);
+        alert(errorThrown);
+      }
+    });
+  }
 });
 
 /***/ }),
