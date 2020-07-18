@@ -16,9 +16,12 @@
                 <h3>Добавление статьи</h3>
                 <form action="{{route('SaveNews')}}" method="post" enctype="multipart/form-data">
                     <meta name="csrf-token" content="{{ csrf_token() }}">
-                    <input type="hidden" name="page" id="page" value="{{$Page['Страница']}}">
-                    <input type="hidden" name="language" id="language" value="{{$Page['Язык']}}">
-                    <input type="hidden" name="menupunct" id="menupunct" value="{{$Page['ПунктМеню']}}">
+                    @isset($data['page'])
+                        <input type="hidden" name="page" id="page" value="{{$data['page']['Страница']}}">
+                    @endisset
+                    <input type="hidden" name="language" id="language" value="{{$data['menu']['ЯзыкПодчинённого']}}">
+                    <input type="hidden" name="menupunct" id="menupunct" value="{{$data['menu']['Подчинённый']}}">
+                    <input type="hidden" name="IDMenu" value="{{$data['menu']['ID']}}">
                     <div class="form-group">
                         <label for="name">Введите название</label><br>
                         <input style="width: 30rem" type="text" name="name" id="name">

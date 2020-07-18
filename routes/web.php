@@ -14,11 +14,19 @@ use Illuminate\Support\Facades\Route;
 */
 Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home');
-Route::get('/', 'MenuController@GetMenu');
 Route::get('/test',['as'=>'test','uses'=>function(){
     return view('test');
 }]);
-Route::get('/GetNews/{Name}',['as'=>'GetNews','uses'=>'MenuController@GetNews']);
-Route::get('/CreateNews/{Name}',['as'=>'CreateNews','uses'=>'MenuController@CreateNews']);
-Route::post('/SaveNews',['as'=>'SaveNews','uses'=>'MenuController@SaveNews']);
-Route::post('/SaveNews/SaveImage',['as'=>'SaveImage','uses'=>'MenuController@SaveImage']);
+Route::get('/', 'MenuController@GetMenu')->name('index');
+Route::get('/DeleteMenu/Id={Id}',['as'=>'DeleteMenu','uses'=>'MenuController@DeleteMenu']);
+Route::get('/CreateUpMenu',['as'=>'CreateUpMenu','uses'=>'MenuController@CreateUpMenu']);
+Route::get('/CreateSubMenu/Id={Id}',['as'=>'CreateSubMenu','uses'=>'MenuController@CreateSubMenu']);
+Route::post('SaveMenu',['as'=>'SaveMenu','uses'=>'MenuController@SaveMenu']);
+Route::get('/DeleteNews/Id={Id}',['as'=>'DeleteNews','uses'=>'PageController@DeleteNews']);
+Route::get('/GetNews/{Name}',['as'=>'GetNews','uses'=>'PageController@GetNews']);
+Route::get('/CreateNews/Menu={MenuName}&Page={PageName}',['as'=>'CreateNews','uses'=>'PageController@CreateNews']);
+Route::get('/CreatePage/Menu={Menu}',['as'=>'CreatePage','uses'=>'PageController@CreatePage']);
+Route::get('/DeletePage/Name={Name}',['as'=>'DeletePage','uses'=>'PageController@DeletePage']);
+Route::post('/SavePage',['as'=>'SavePage','uses'=>'PageController@SavePage']);
+Route::post('/SaveNews',['as'=>'SaveNews','uses'=>'PageController@SaveNews']);
+Route::post('/SaveNews/SaveImage',['as'=>'SaveImage','uses'=>'PageController@SaveImage']);

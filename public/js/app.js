@@ -47470,6 +47470,43 @@ $(document).ready(function () {
       }
     }
   });
+  var menutype = document.getElementById('type');
+  $('#type').bind('change', function () {
+    if (menutype.selectedIndex == 0) {
+      $('#menuarticle').show();
+      $('#link').hide();
+      $('#linktext').innerText = "";
+    }
+
+    if (menutype.selectedIndex == 1) {
+      $('#link').show();
+      $('#menuarticle').hide();
+      $('#namearticle').innerText = "";
+      $('#topicarticle').innerText = "";
+      $('#descriptionarticle').innerText = "";
+      $('#textarticle').innerText = "";
+    }
+
+    if (menutype.selectedIndex == 2) {
+      $('#link').hide();
+      $('#menuarticle').hide();
+      $('#linktext').innerText = "";
+      $('#namearticle').innerText = "";
+      $('#topicarticle').innerText = "";
+      $('#descriptionarticle').innerText = "";
+      $('#textarticle').innerText = "";
+    }
+
+    if (menutype.selectedIndex == 3) {
+      $('#link').hide();
+      $('#menuarticle').hide();
+      $('#linktext').innerText = "";
+      $('#namearticle').innerText = "";
+      $('#topicarticle').innerText = "";
+      $('#descriptionarticle').innerText = "";
+      $('#textarticle').innerText = "";
+    }
+  });
 
   function sendFile(file, editor, welEditable) {
     datafile = new FormData();

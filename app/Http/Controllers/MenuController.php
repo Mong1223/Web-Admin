@@ -11,7 +11,7 @@ use PHPUnit\Framework\Constraint\Count;
 class MenuController extends Controller
 {
     public function GetMenu(){
-        $menu = DB::select('SELECT * FROM Menu');
+        $menu = DB::select('SELECT * FROM Menu ORDER BY [Уровень меню], [Порядок отображения]');
         $data['menu'] = [];
         $titles = ['ID','Подчинённый','УровеньМеню','ЯзыкПодчинённого','Тип','Ссылка','ПорядокОтображения','IDСтатьи','IDРодителя','Родитель'];
         for($i=0;$i<Count($menu);$i++){
@@ -22,82 +22,122 @@ class MenuController extends Controller
                 $j++;
             }
         }
+        /*$tempdata = [];//Хотел иерархию построить, будет время подумаю над этим
+        $i = 0;
+        foreach ($data['menu'] as $element){
+            $tempdata[(int)$element['УровеньМеню']][$i] = $element;
+            $i++;
+        }
+        for($i=3;$i>1;$i--){
+            foreach ($tempdata[$i] as $el){
+                foreach ($tempdata[$i-1] as $elem){
+                    if($elem['Подчинённый']==$el['Родитель'])
+                        $elem['Подчинённый']['Подчинённые'] = $el;
+                }
+            }
+        }
+        dd($tempdata);*/
+        return view ('index',['data'=>$data]);
+    }
+    public function CreateUpMenu(){
+        $menu = DB::select('SELECT TOP(1) [Порядок отображения] FROM Menu WHERE [Уровень меню] = ? ORDER BY [Порядок отображения] DESC', [1]);
+        $data['ПорядокОтображения'] = 0;
+        for($i=0;$i<Count($menu);$i++){
+            $j = 0;
+            foreach ($menu[$i] as $element){
+                $data['ПорядокОтображения'] = $element;
+                $j++;
+            }
+        }
+        $data['ПорядокОтображения'] = (int) $data['ПорядокОтображения'] + 1;
+        $langs = DB::select('SELECT * FROM Языки');
+        $titles = ['ID','Наименование'];
+        for($i=0;$i<Count($langs);$i++){
+            $data['langs'][$i] = [];
+            $j = 0;
+            foreach ($langs[$i] as $element){
+                $data['langs'][$i][$titles[$j]] = $element;
+                $j++;
+            }
+        }
+        $data['level']=1;
         //dd($data);
-        return view ('index',['data'=>$data]);
+        return view('CreateMenu',['data'=>$data]);
     }
-    public function GetNews($name1){
-        $menu = DB::select('SELECT * FROM Menu');
-        $data['menu'] = [];
+    public function SaveMenu(Request $request){
+        $upper = $request->input('nameUpperMenu');
+        $text = '<!DOCTYPE HTML><html><head><meta charset=\"utf-8\"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="viewport" content="width=device-width, initial-scale=1.0">'.'<title>'
+        .$request->input('name').'</title>'.'</head>'.'<body>'.$request->input('text').'</body>'.'</html>';
+        if($request->input('type')=='LINK'){
+            DB::statement('EXECUTE AddMenuItem ?,?,?,?,?,?,?',[$request->input('level'),$request->input('name'),
+                $upper,$request->input('Language'),$request->input('order'),
+                $request->input('type'),$request->input('link')]);
+        }
+        if($request->input('type')=='ARTICLE'){
+            DB::statement('EXECUTE AddMenuItem ?,?,?,?,?,?,?',[$request->input('level'),$request->input('name'),
+                $upper,$request->input('Language'),$request->input('order'),
+                $request->input('type'),null]);
+            DB::statement('EXECUTE AddArticle ?,?,?,?,?',[$request->input('namearticle'),
+                $text,$request->input('topicarticle'),$request->input('Language'),
+                $request->input('description')]);
+            DB::statement('DECLARE @IdArticle UNIQUEIDENTIFIER
+                                 DECLARE @IdMenu UNIQUEIDENTIFIER
+                                 SELECT @IdArticle = Статья.[Id статьи]
+                                 FROM Статья
+                                 WHERE Статья.Название=?
+                                 SELECT @IdMenu = [Представление меню].[Id пункта меню]
+                                 FROM [Представление меню]
+                                 WHERE [Представление меню].[Наименование]=?
+                                 INSERT INTO [Статьи пункты меню]([ID Пункта меню], [ID статьи]) VALUES(@IdMenu,@IdArticle)',
+                [$request->input('namearticle'),$request->input('name')]);
+        }
+        if($request->input('type')!='LINK'&&$request->input('type')!='ARTICLE'){
+            DB::statement('EXECUTE AddMenuItem ?,?,?,?,?,?,?',[$request->input('level'),$request->input('name'),
+                $upper,$request->input('Language'),$request->input('order'),
+                $request->input('type'),null]);
+        }
+        return redirect()->route('index');
+    }
+    public function DeleteMenu($Id){
+        DB::statement('EXECUTE DeleteMenuItem ?',[$Id]);
+        return redirect()->route('index');
+    }
+    public function CreateSubMenu($Id){
+        $menu = DB::select('SELECT * FROM Menu WHERE [ID] = ? ORDER BY [Уровень меню], [Порядок отображения]',[$Id]);
+        $data['uppermenu'] = [];
         $titles = ['ID','Подчинённый','УровеньМеню','ЯзыкПодчинённого','Тип','Ссылка','ПорядокОтображения','IDСтатьи','IDРодителя','Родитель'];
         for($i=0;$i<Count($menu);$i++){
-            $data['menu'][$i] = [];
             $j = 0;
             foreach ($menu[$i] as $element){
-                $data['menu'][$i][$titles[$j]] = $element;
+                $data['uppermenu'][$titles[$j]] = $element;
                 $j++;
             }
         }
-        $listpages = DB::select('Select DISTINCT Страница, [Пункт меню] From ArticlesInfo Where [Пункт меню]=?', [$name1]);
-        $titles = ['Страница','ПунктМеню'];
-        for($i=0;$i<Count($listpages);$i++){
-            $data['listpages'][$i] = [];
+        $order = DB::select('SELECT TOP(1) [Порядок отображения] FROM Menu
+                                   WHERE [Уровень меню] = ? AND [ID родителя] = ?
+                                   ORDER BY [Порядок отображения] DESC',
+                                   [(int)$data['uppermenu']['УровеньМеню']+1,$data['uppermenu']['ID']]);
+        $data['ПорядокОтображения'] = 0;
+        for($i=0;$i<Count($order);$i++){
             $j = 0;
-            foreach ($listpages[$i] as $element){
-                $data['listpages'][$i][$titles[$j]] = $element;
+            foreach ($order[$i] as $element){
+                $data['ПорядокОтображения'] = $element;
                 $j++;
             }
         }
-        $titles = ['Страница','ПунктМеню','Язык','IDСтатьи','НазваниеСтатьи','ТекстСтатьи','ВремяСозданияСтатьи','КраткаяВерсия'];
-        $listnews = DB::select('Select * From ArticlesInfo Where [Пункт меню]=?', [$name1]);
-        for($i=0;$i<Count($listnews);$i++){
-            $data['listnews'][$i] = [];
+        $data['ПорядокОтображения'] = (int) $data['ПорядокОтображения'] + 1;
+        $langs = DB::select('SELECT * FROM Языки');
+        $titles = ['ID','Наименование'];
+        for($i=0;$i<Count($langs);$i++){
+            $data['langs'][$i] = [];
             $j = 0;
-            foreach ($listnews[$i] as $element){
-                $data['listnews'][$i][$titles[$j]] = $element;
+            foreach ($langs[$i] as $element){
+                $data['langs'][$i][$titles[$j]] = $element;
                 $j++;
             }
         }
-        return view ('index',['data'=>$data]);
-    }
-    public function CreateNews($PageName){
-        $Page = DB::select('SELECT DISTINCT Страница, [Пункт меню], Язык FROM ArticlesInfo WHERE Страница=?',[$PageName]);
-        $titles = ['Страница','ПунктМеню','Язык'];
-        $j=0;
-        $data = [];
-        for($i=0;$i<Count($Page);$i++){
-            $j = 0;
-            foreach ($Page[$i] as $element){
-                $data[$titles[$j]] = $element;
-                $j++;
-            }
-        }
-        $Page = $data;
-        return view('CreateNews',['Page'=>$Page]);
-    }
-    public function SaveNews(Request $request){
-        DB::statement('EXECUTE AddArticle ?,?,?,?,?',[$request->input('name'),$request->input('text'),
-            $request->input('topic'),$request->input('language'),$request->input('description')]);
-        DB::statement('EXECUTE AddArticlesInPages ?, ?',[$request->input('page'),$request->input('name')]);
-        return redirect()->route('GetNews',$request->input('menupunct'));
-    }
-    public function SaveImage(Request $request){
-        $file = $request->file;
-        $filename = $file->getClientOriginalName();
-        $file->storeAs('images', $filename);
-        $path = storage_path() . "\app\images\\" . $filename;
-        $imagedata = unpack("H*hex",file_get_contents($path));
-        $imagedata = '0x'.$imagedata['hex'];
-        //dd($imagedata[1]);
-        $filecontent = base64_encode($file->openFile()->fread($file->getSize()));
-        //dd($filecontent);
-        $filename = $file->getClientOriginalName();
-        DB::statement('INSERT INTO Медиа(Данные) VALUES(CONVERT(VARBINARY(MAX),?));',[$imagedata]);
-        $url = 'http://109.123.155.178:8080/media/img/';
-        $id = DB::select('SELECT [Id Медиа] FROM [Медиа] ORDER BY [Время создания] DESC');
-        foreach ($id[0] as $elem){
-            $id = $elem;
-        }
-        $url = $url . $id;
-        return $url;
+        $data['level']=(int)$data['uppermenu']['УровеньМеню']+1;
+        //dd($data);
+        return view('CreateMenu',['data'=>$data]);
     }
 }
