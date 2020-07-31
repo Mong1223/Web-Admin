@@ -47507,6 +47507,53 @@ $(document).ready(function () {
       $('#textarticle').innerText = "";
     }
   });
+  var hamburg = document.getElementById('hamburg');
+  hamburg.addEventListener('click', function () {
+    var sidebarcont = document.getElementById('sidebar-content');
+    var contentnav = document.getElementById('content-nav');
+    var main = document.getElementById('main');
+    sidebarcont.classList.toggle("d-none");
+    sidebarcont.classList.toggle("d-block");
+    contentnav.classList.toggle("col-md-1");
+    contentnav.classList.toggle("col-md-2");
+    contentnav.classList.toggle("sidebar-little");
+    main.classList.toggle("col-md-11");
+    main.classList.toggle("col-md-10");
+  });
+  var page = document.getElementsByClassName('article-title');
+
+  for (var i = 0; i < page.length; i++) {
+    page[i].addEventListener('click', function (event) {
+      var div = event.target.nextSibling;
+      div.classList.toggle("d-none");
+      div.classList.toggle("d-block");
+    });
+  }
+
+  var input = document.getElementById("#image");
+  var group = document.getElementById("#imagegroup");
+  input.addEventListener("change", function (e) {
+    alert('message');
+
+    var _loop = function _loop() {
+      var file = e.srcElement.files[i];
+      var li = document.createElement("li");
+      var img = document.createElement("img");
+      li.append(img);
+      var reader = new FileReader();
+
+      reader.onloaded = function () {
+        img.src = reader.result;
+        group.appendChild(li);
+      };
+
+      reader.readAsDataURL(file);
+    };
+
+    for (var i = 0; i < e.srcElement.files.length; i++) {
+      _loop();
+    }
+  });
 
   function sendFile(file, editor, welEditable) {
     datafile = new FormData();
@@ -47523,8 +47570,8 @@ $(document).ready(function () {
       processData: false,
       async: false,
       success: function success(url) {
-        $('#testing').html(url);
-        editor.insertImage(welEditable, url);
+        var html = $('#redactor').summernote('code');
+        $('#redactor').summernote('code', html + '<img style="max-width:100%;height:auto;" src="' + url + '"/>');
       },
       error: function error(jqXHR, textStatus, errorThrown) {
         alert(textStatus);

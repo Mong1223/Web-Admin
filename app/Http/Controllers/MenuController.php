@@ -140,4 +140,35 @@ class MenuController extends Controller
         //dd($data);
         return view('CreateMenu',['data'=>$data]);
     }
+    public function EditMenu($name){
+        $menu = DB::select("SELECT ID, Подчинённый, [Уровень меню] 'УровеньМеню',
+                                  [Язык подчинённого] 'Язык', Тип, Ссылка,
+                                  [Порядок отображения] 'ПорядокОтображения',[Id статьи] 'IdСтатьи',
+                                  [Id родителя] 'IdРодителя',Родитель
+                                  FROM Menu WHERE [Подчинённый]=?",[$name])[0];
+        $data['menu']= $menu;
+        if($data['menu']->Тип=='ARTICLE'){
+            $article = DB::select("SELECT [Статья].[Id статьи] 'IdСтатьи', Название, Текст, Тематика,
+                                         [Время создания] 'ВремяСоздания',[Краткая версия статьи] 'КраткаяВерсияСтатьи',
+                                         [Картинка статьи] 'КартинкаСтатьи'
+                                         FROM [Статья]
+                                         WHERE [Id статьи]=?",[$data['menu']->IdСтатьи])[0];
+            $data['article']=$article;
+        }
+        $langs = DB::select("SELECT [Id языка] 'IdЯзыка', Наименование
+                                   FROM [Языки]");
+        $data['langs'] = $langs;
+        return view('EditMenu',['data'=>$data]);
+    }
+    public function UpdateMenu($Id,Request $request){
+        $image = null;
+        $text = '<!DOCTYPE HTML><html><head><meta charset=\"utf-8\"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="viewport" content="width=device-width, initial-scale=1.0">'.'<title>'
+            .$request->input('name').'</title>'.'</head>'.'<body>'.$request->input('text').'</body>'.'</html>';
+        DB::statement('EXECUTE UpdateMenu ?,?,?,?,?,?,?,?,?,?,?,?',[$request->input('ID'),
+            $request->input('name'),$request->input('Language'),$request->input('URL'),
+            $request->input('order'),$request->input('type'),$request->input('IDArticle'),
+            $request->input('namearticle'),$request->input('topicarticle'),$request->input('description'),
+            $image,$text]);
+        return redirect()->route('index');
+    }
 }

@@ -117,8 +117,7 @@ class PageController extends Controller
             $request->input('text').'</body>'.'</html>';
         DB::statement('EXECUTE AddArticle ?,?,?,?,?',[$request->input('name'),$text,
             $request->input('topic'),$request->input('language'),$request->input('description')]);
-        if($request->input('page'!=null)){
-            dd($request);
+        if($request->input('page')!=null){
             DB::statement('EXECUTE AddArticlesInPages ?, ?',[$request->input('page'),$request->input('name')]);
         }
         else{
@@ -147,7 +146,7 @@ class PageController extends Controller
         }
         $url = $url . $id;
         return $url;
-    }
+    }//Тут всё работает не трогать!!!
     public function DeleteNews($Id){
         DB::statement('EXECUTE DeleteArticle ?',[$Id]);
         return redirect()->route('index');

@@ -42,7 +42,45 @@ $(document).ready(function () {
             $('#descriptionarticle').innerText = "";
             $('#textarticle').innerText = "";
         }
-    })
+    });
+    let hamburg = document.getElementById('hamburg');
+    hamburg.addEventListener('click',function () {
+        let sidebarcont = document.getElementById('sidebar-content');
+        let contentnav = document.getElementById('content-nav');
+        let main = document.getElementById('main');
+        sidebarcont.classList.toggle("d-none");
+        sidebarcont.classList.toggle("d-block");
+        contentnav.classList.toggle("col-md-1");
+        contentnav.classList.toggle("col-md-2");
+        contentnav.classList.toggle("sidebar-little");
+        main.classList.toggle("col-md-11");
+        main.classList.toggle("col-md-10");
+    });
+    let page = document.getElementsByClassName('article-title');
+    for (var i=0;i<page.length;i++){
+        page[i].addEventListener('click',function (event) {
+            var div = event.target.nextSibling;
+            div.classList.toggle("d-none");
+            div.classList.toggle("d-block");
+        });
+    }
+    let input = document.getElementById("#image");
+    let group = document.getElementById("#imagegroup");
+    input.addEventListener("change",e => {
+        alert('message');
+        for(var i =0;i<e.srcElement.files.length; i++){
+            let file = e.srcElement.files[i];
+            let li = document.createElement("li");
+            let img = document.createElement("img");
+            li.append(img);
+            let reader = new FileReader();
+            reader.onloaded = function(){
+                img.src = reader.result;
+                group.appendChild(li);
+            }
+            reader.readAsDataURL(file);
+        }
+    });
     function sendFile(file, editor, welEditable) {
         datafile = new FormData();
         datafile.append("file",file);
@@ -58,8 +96,8 @@ $(document).ready(function () {
             processData: false,
             async: false,
             success: function (url) {
-                $('#testing').html(url);
-                editor.insertImage(welEditable,url);
+                let html = $('#redactor').summernote('code');
+                $('#redactor').summernote('code',html+'<img style="max-width:100%;height:auto;" src="'+url+'"/>');
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 alert(textStatus);
