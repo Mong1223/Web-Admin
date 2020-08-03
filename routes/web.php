@@ -32,3 +32,5 @@ Route::get('/DeletePage/Name={Name}',['as'=>'DeletePage','uses'=>'PageController
 Route::post('/SavePage',['as'=>'SavePage','uses'=>'PageController@SavePage']);
 Route::post('/SaveNews',['as'=>'SaveNews','uses'=>'PageController@SaveNews']);
 Route::post('/SaveNews/SaveImage',['as'=>'SaveImage','uses'=>'PageController@SaveImage']);
+Route::get('EditNews/id={id}',['as'=>'EditNews','uses'=>'PageController@EditNews']);
+Route::post('/UpdateNews/id={id}',['as'=>'UpdateNews','uses'=>'PageController@UpdateNews']);

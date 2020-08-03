@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Psr\Http\Message\RequestInterface;
 
 class PageController extends Controller
 {
@@ -46,7 +47,7 @@ class PageController extends Controller
                 }
             }
         }
-        $titles = ['Страница','ПунктМеню','Язык','IDСтатьи','НазваниеСтатьи','ТекстСтатьи','ВремяСозданияСтатьи','КраткаяВерсия'];
+        $titles = ['Страница','ПунктМеню','Язык','IDСтатьи','НазваниеСтатьи','ТекстСтатьи','ВремяСозданияСтатьи','КраткаяВерсия','Тематика','Картинка'];
         $listnews = DB::select('Select * From ArticlesInfo Where [Пункт меню]=?', [$name1]);
         for($i=0;$i<Count($listnews);$i++){
             $data['listnews'][$i] = [];
@@ -112,11 +113,13 @@ class PageController extends Controller
         }
     }
     public function SaveNews(Request $request){
+        $date = getdate();
+        $month = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октабря','ноября','декабря'];
         $text = '<!DOCTYPE HTML><html><head><meta charset=\"utf-8\"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">'.'<title>'.$request->input('name').'</title>'.'</head>'.'<body>'.
-            $request->input('text').'</body>'.'</html>';
-        DB::statement('EXECUTE AddArticle ?,?,?,?,?',[$request->input('name'),$text,
-            $request->input('topic'),$request->input('language'),$request->input('description')]);
+            '<time datetime="'.$date['year'].'-'.$date['mon'].'-'.$date['mday'].'" title="'.($date['hours']+7).':'.$date['minutes'].', '.$date['mday'].' '.$date['month'].' '. $date['year'].'">'.$date['mday'].' '.$month[$date['mon']-1].' '.$date['year'].'</time>'. $request->input('text').'</body>'.'</html>';
+        DB::statement('EXECUTE AddArticle ?,?,?,?,?,?',[$request->input('name'),$text,
+            $request->input('topic'),$request->input('language'),$request->input('description'),$request->input('idimage')]);
         if($request->input('page')!=null){
             DB::statement('EXECUTE AddArticlesInPages ?, ?',[$request->input('page'),$request->input('name')]);
         }
@@ -139,7 +142,7 @@ class PageController extends Controller
         $stmt->setAttribute(\PDO::SQLSRV_ATTR_ENCODING, \PDO::SQLSRV_ENCODING_BINARY);
         $stmt->bindValue(1, $filecontent);
         $stmt->execute();
-        $url = 'http://109.123.155.178:8080/media/img/';
+        $url = 'http://109.123.155.178:8080/api/media/img/';
         $id = DB::select('SELECT [Id Медиа] FROM [Медиа] ORDER BY [Время создания] DESC');
         foreach ($id[0] as $elem){
             $id = $elem;
@@ -166,5 +169,23 @@ class PageController extends Controller
     public function DeletePage($Name){
         DB::statement('EXECUTE DeletePage ?',[$Name]);
         return redirect()->route('index');
+    }
+    public function EditNews($id)
+    {
+        $news = DB::select('SELECT [Id статьи] "IdСтатьи", Страница, [Пункт меню] "ПунктМеню", Язык, [Название статьи] "НазваниеСтатьи", [Текст статьи] "ТекстСтатьи", [Краткая версия статьи] "КраткаяВерсия",
+        Тематика, [Картинка статьи] "Картинка" FROM ArticlesInfo WHERE [Id статьи]=?',[$id])[0];
+        return view('EditNews',['data'=>$news]);
+    }
+    public function UpdateNews($id, Request $request)
+    {
+        $date = getdate();
+        $month = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октабря','ноября','декабря'];
+        $text = '<!DOCTYPE HTML><html><head><meta charset=\"utf-8\"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">'.'<title>'.$request->input('name').'</title>'.'</head>'.'<body>'.
+            '<time datetime="'.$date['year'].'-'.$date['mon'].'-'.$date['mday'].'" title="'.($date['hours']+7).':'.$date['minutes'].', '.$date['mday'].' '.$date['month'].' '. $date['year'].'">'.$date['mday'].' '.$month[$date['mon']-1].' '.$date['year'].'</time>'. $request->input('text').'</body>'.'</html>';
+        DB::statement('UPDATE Статья
+                             SET Название = ?, Текст = ?, [Краткая версия статьи] = ?, Тематика = ?, [Картинка статьи] = ?
+                             WHERE [Id статьи] = ?',[$request->input('name'),$text,$request->input('description'),$request->input('topic'),$request->input('idimage'), $id]);
+        return redirect()->route('GetNews',$request->input('menupunct'));
     }
 }

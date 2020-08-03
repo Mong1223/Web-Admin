@@ -66,8 +66,10 @@ class MenuController extends Controller
     }
     public function SaveMenu(Request $request){
         $upper = $request->input('nameUpperMenu');
-        $text = '<!DOCTYPE HTML><html><head><meta charset=\"utf-8\"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="viewport" content="width=device-width, initial-scale=1.0">'.'<title>'
-        .$request->input('name').'</title>'.'</head>'.'<body>'.$request->input('text').'</body>'.'</html>';
+        $date = getdate();
+        $text = '<!DOCTYPE HTML><html><head><meta charset=\"utf-8\"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">'.'<title>'.$request->input('name').'</title>'.'</head>'.'<body>'.
+            '<time datetime="'.$date['year'].'-'.$date['mon'].'-'.$date['mday'].'" title="'.($date['hours']+7).':'.$date['minutes'].', '.$date['mday'].' '.$date['month'].' '. $date['year'].'">'.$date['mday'].' '.$month[$date['mon']-1].' '.$date['year'].'</time>'. $request->input('text').'</body>'.'</html>';
         if($request->input('type')=='LINK'){
             DB::statement('EXECUTE AddMenuItem ?,?,?,?,?,?,?',[$request->input('level'),$request->input('name'),
                 $upper,$request->input('Language'),$request->input('order'),
@@ -77,9 +79,9 @@ class MenuController extends Controller
             DB::statement('EXECUTE AddMenuItem ?,?,?,?,?,?,?',[$request->input('level'),$request->input('name'),
                 $upper,$request->input('Language'),$request->input('order'),
                 $request->input('type'),null]);
-            DB::statement('EXECUTE AddArticle ?,?,?,?,?',[$request->input('namearticle'),
+            DB::statement('EXECUTE AddArticle ?,?,?,?,?,?',[$request->input('namearticle'),
                 $text,$request->input('topicarticle'),$request->input('Language'),
-                $request->input('description')]);
+                $request->input('description'),$request->input('idimage')]);
             DB::statement('DECLARE @IdArticle UNIQUEIDENTIFIER
                                  DECLARE @IdMenu UNIQUEIDENTIFIER
                                  SELECT @IdArticle = Статья.[Id статьи]
@@ -161,14 +163,15 @@ class MenuController extends Controller
         return view('EditMenu',['data'=>$data]);
     }
     public function UpdateMenu($Id,Request $request){
-        $image = null;
-        $text = '<!DOCTYPE HTML><html><head><meta charset=\"utf-8\"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="viewport" content="width=device-width, initial-scale=1.0">'.'<title>'
-            .$request->input('name').'</title>'.'</head>'.'<body>'.$request->input('text').'</body>'.'</html>';
+        $date = getdate();
+        $text = '<!DOCTYPE HTML><html><head><meta charset=\"utf-8\"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">'.'<title>'.$request->input('name').'</title>'.'</head>'.'<body>'.
+            '<time datetime="'.$date['year'].'-'.$date['mon'].'-'.$date['mday'].'" title="'.($date['hours']+7).':'.$date['minutes'].', '.$date['mday'].' '.$date['month'].' '. $date['year'].'">'.$date['mday'].' '.$month[$date['mon']-1].' '.$date['year'].'</time>'. $request->input('text').'</body>'.'</html>';
         DB::statement('EXECUTE UpdateMenu ?,?,?,?,?,?,?,?,?,?,?,?',[$request->input('ID'),
             $request->input('name'),$request->input('Language'),$request->input('URL'),
             $request->input('order'),$request->input('type'),$request->input('IDArticle'),
             $request->input('namearticle'),$request->input('topicarticle'),$request->input('description'),
-            $image,$text]);
+            $request->input('idimage'),$text]);
         return redirect()->route('index');
     }
 }

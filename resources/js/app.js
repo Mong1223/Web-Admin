@@ -64,22 +64,33 @@ $(document).ready(function () {
             div.classList.toggle("d-block");
         });
     }
-    let input = document.getElementById("#image");
-    let group = document.getElementById("#imagegroup");
-    input.addEventListener("change",e => {
-        alert('message');
-        for(var i =0;i<e.srcElement.files.length; i++){
-            let file = e.srcElement.files[i];
-            let li = document.createElement("li");
-            let img = document.createElement("img");
-            li.append(img);
-            let reader = new FileReader();
-            reader.onloaded = function(){
-                img.src = reader.result;
-                group.appendChild(li);
+    let input = document.getElementById('image');
+    let group = document.getElementById('imagegroup');
+    input.addEventListener('change',function (event) {
+        let file = event.srcElement.files[0];
+        datafile = new FormData();
+        datafile.append("file",file);
+        $.ajax({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            data: datafile,
+            type: "POST",
+            url: '/SaveNews/SaveImage',
+            cache: false,
+            contentType: false,
+            processData: false,
+            async: true,
+            success: function (url) {
+                $('#imgfile').attr('src',url);
+                let id = url.substr(42);
+                $('#imgid').attr('value',id);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert(textStatus);
+                alert(errorThrown);
             }
-            reader.readAsDataURL(file);
-        }
+        });
     });
     function sendFile(file, editor, welEditable) {
         datafile = new FormData();
@@ -94,7 +105,7 @@ $(document).ready(function () {
             cache: false,
             contentType: false,
             processData: false,
-            async: false,
+            async: true,
             success: function (url) {
                 let html = $('#redactor').summernote('code');
                 $('#redactor').summernote('code',html+'<img style="max-width:100%;height:auto;" src="'+url+'"/>');

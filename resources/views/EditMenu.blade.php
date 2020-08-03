@@ -67,9 +67,8 @@
                         <div class="form-group" id="imagegroup">
                             <label for="file">Загрузите фотографию</label><br>
                             <input type="file" name="image" id="image">
-                            @isset($data['article']->КартинкаСтатьи)
-                                <img src="{{$data['article']->КартинкаСтатьи}}" style="max-width:100%;height:auto;">
-                            @endisset
+                            <img id="imgfile" src="@isset($data['article']->КартинкаСтатьи){{$data['article']->КартинкаСтатьи}}@endisset" style="max-width:100%;height:auto;">
+                            <input name="idimage" type="hidden" id="imgid">
                         </div>
                         <div class="form-group">
                             <label for="description">Введите короткий текст</label><br>

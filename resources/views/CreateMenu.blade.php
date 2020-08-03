@@ -64,6 +64,12 @@
                             <label for="topicarticle">Введите тему</label><br>
                             <input style="width: 30rem" type="text" name="topicarticle" id="topicarticle">
                         </div>
+                        <div class="form-group" id="imagegroup">
+                            <label for="file">Загрузите фотографию</label><br>
+                            <input type="file" name="image" id="image"><br>
+                            <img id="imgfile" style="max-width:100%;height:auto;">
+                            <input name="idimage" type="hidden" id="imgid">
+                        </div>
                         <div class="form-group">
                             <label for="description">Введите короткий текст</label><br>
                             <textarea name="description" cols="55" rows="10" id="descriptionarticle"></textarea>

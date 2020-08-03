@@ -47530,29 +47530,33 @@ $(document).ready(function () {
     });
   }
 
-  var input = document.getElementById("#image");
-  var group = document.getElementById("#imagegroup");
-  input.addEventListener("change", function (e) {
-    alert('message');
-
-    var _loop = function _loop() {
-      var file = e.srcElement.files[i];
-      var li = document.createElement("li");
-      var img = document.createElement("img");
-      li.append(img);
-      var reader = new FileReader();
-
-      reader.onloaded = function () {
-        img.src = reader.result;
-        group.appendChild(li);
-      };
-
-      reader.readAsDataURL(file);
-    };
-
-    for (var i = 0; i < e.srcElement.files.length; i++) {
-      _loop();
-    }
+  var input = document.getElementById('image');
+  var group = document.getElementById('imagegroup');
+  input.addEventListener('change', function (event) {
+    var file = event.srcElement.files[0];
+    datafile = new FormData();
+    datafile.append("file", file);
+    $.ajax({
+      headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+      },
+      data: datafile,
+      type: "POST",
+      url: '/SaveNews/SaveImage',
+      cache: false,
+      contentType: false,
+      processData: false,
+      async: true,
+      success: function success(url) {
+        $('#imgfile').attr('src', url);
+        var id = url.substr(42);
+        $('#imgid').attr('value', id);
+      },
+      error: function error(jqXHR, textStatus, errorThrown) {
+        alert(textStatus);
+        alert(errorThrown);
+      }
+    });
   });
 
   function sendFile(file, editor, welEditable) {
@@ -47568,7 +47572,7 @@ $(document).ready(function () {
       cache: false,
       contentType: false,
       processData: false,
-      async: false,
+      async: true,
       success: function success(url) {
         var html = $('#redactor').summernote('code');
         $('#redactor').summernote('code', html + '<img style="max-width:100%;height:auto;" src="' + url + '"/>');
