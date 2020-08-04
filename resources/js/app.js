@@ -9,6 +9,11 @@ $(document).ready(function () {
             }
         }
     });
+    var langtable = document.getElementById('langs-panel');
+    $('#langs').bind('click',function () {
+        langtable.classList.toggle('d-none');
+        langtable.classList.toggle('d-block');
+    });
     var menutype = document.getElementById('type');
     $('#type').bind('change',function () {
         if(menutype.selectedIndex==0){

@@ -18,6 +18,8 @@ Route::get('/test',['as'=>'test','uses'=>function(){
     return view('test');
 }]);
 Route::get('/', 'MenuController@GetMenu')->name('index');
+Route::get('/GetMenuByLang/name={name}',['as'=>'GetMenuByLang','uses'=>'MenuController@GetMenuByLang']);
+Route::get('/GetSubMenu/id={id}',['as'=>'GetSubMenu','uses'=>'MenuController@GetSubMenu']);
 Route::get('/DeleteMenu/Id={Id}',['as'=>'DeleteMenu','uses'=>'MenuController@DeleteMenu']);
 Route::get('/CreateUpMenu',['as'=>'CreateUpMenu','uses'=>'MenuController@CreateUpMenu']);
 Route::get('/CreateSubMenu/Id={Id}',['as'=>'CreateSubMenu','uses'=>'MenuController@CreateSubMenu']);

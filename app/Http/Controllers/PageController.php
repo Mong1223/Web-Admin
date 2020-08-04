@@ -9,7 +9,7 @@ use Psr\Http\Message\RequestInterface;
 class PageController extends Controller
 {
     public function GetNews($name1){
-        $menu = DB::select('SELECT * FROM Menu ORDER BY [Уровень меню], [Порядок отображения]');
+        $menu = DB::select('SELECT * FROM Menu WHERE [Уровень меню]=1 ORDER BY [Уровень меню], [Порядок отображения]');
         $data['menu'] = [];
         $titles = ['ID','Подчинённый','УровеньМеню','ЯзыкПодчинённого','Тип','Ссылка','ПорядокОтображения','IDСтатьи','IDРодителя','Родитель'];
         for($i=0;$i<Count($menu);$i++){
@@ -72,7 +72,7 @@ class PageController extends Controller
             }
         }
         $data['ПунктМеню']=$name1;
-        return view ('index',['data'=>$data]);
+        return view ('News',['data'=>$data]);
     }
     public function CreateNews($MenuName,$PageName){
         if($PageName!=" "){
