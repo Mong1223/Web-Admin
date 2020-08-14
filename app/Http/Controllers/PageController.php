@@ -8,56 +8,34 @@ use Psr\Http\Message\RequestInterface;
 
 class PageController extends Controller
 {
-    public function GetNews($name1){
-        $menu = DB::select('SELECT * FROM Menu WHERE [Уровень меню]=1 ORDER BY [Уровень меню], [Порядок отображения]');
-        $data['menu'] = [];
-        $titles = ['ID','Подчинённый','УровеньМеню','ЯзыкПодчинённого','Тип','Ссылка','ПорядокОтображения','IDСтатьи','IDРодителя','Родитель'];
-        for($i=0;$i<Count($menu);$i++){
-            $data['menu'][$i] = [];
-            $j = 0;
-            foreach ($menu[$i] as $element){
-                $data['menu'][$i][$titles[$j]] = $element;
-                $j++;
-            }
-        }
-        $listpages = DB::select('Select DISTINCT Страница, [Пункт меню] From ArticlesInfo Where [Пункт меню]=?', [$name1]);
-        $titles = ['Страница','ПунктМеню'];
-        for($i=0;$i<Count($listpages);$i++){
-            $data['listpages'][$i] = [];
-            $j = 0;
-            foreach ($listpages[$i] as $element){
-                $data['listpages'][$i][$titles[$j]] = $element;
-                $j++;
-            }
-        }
+    public function GetNews($menuid,$lang){
+        $menu = DB::select("SELECT ID,Подчинённый, [Уровень меню] 'УровеньМеню',
+                                  [Язык подчинённого] 'ЯзыкПодчинённого',Тип, Ссылка, [Порядок отображения] 'ПорядокОтображения',
+                                  [ID статьи] 'IDCтатьи', [ID картинки] 'IDКартинки',[ID родителя] 'IDРодителя', Родитель
+                                  FROM Menu WHERE [Уровень меню]=1 AND [Язык подчинённого]= 'rus' ORDER BY [Уровень меню], [Порядок отображения]");
+        $data['menu'] = $menu;
+        $langs = DB::select('SELECT [ID Языка] "IDЯзыка", Наименование FROM Языки');
+        $data['menulangs'] = $langs;
+        $listpages = DB::select('Select DISTINCT Страница,[ID пункта меню] "IDПунктаМеню", [Пункт меню] "ПунктМеню" From ArticlesInfo Where [ID пункта меню]=? AND [Язык]=?', [$menuid,$lang]);
+        $data['listpages']=$listpages;
         if(Count($listpages)==0){
-            $titles = ['Страница','ПунктМеню'];
-            $listpages = DB::select("SELECT [Страница].[Название],[Представление меню].[Наименование] 'ПунктМеню'
+            $listpages = DB::select("SELECT [Страница].[Название] 'Страница',[Представление меню].[Наименование] 'ПунктМеню',
+                                           [Представление меню].[Id пункта меню] 'IDПунктаМеню'
                                            FROM [Страница] INNER JOIN [Страницы пункты меню]
                                            ON [Страница].[Id страницы]=[Страницы пункты меню].[Id страницы]
                                            INNER JOIN [Представление меню] ON [Страницы пункты меню].[Id пункта меню]
                                            =[Представление меню].[Id пункта меню]
-                                           WHERE [Представление меню].[Наименование]=?",[$name1]);
-            for($i=0;$i<Count($listpages);$i++){
-                $j=0;
-                $data['listpages']=[];
-                foreach ($listpages[$i] as $element){
-                    $data['listpages'][$i][$titles[$j]] = $element;
-                    $j++;
-                }
-            }
+                                           INNER JOIN [Языки] ON [Представление меню].[ID языка] = [Языки].[ID языка]
+                                           WHERE [Представление меню].[ID пункта меню]=? AND [Языки].[Наименование]=?",[$menuid,$lang]);
+            $data['listpages']=$listpages;
         }
-        $titles = ['Страница','ПунктМеню','Язык','IDСтатьи','НазваниеСтатьи','ТекстСтатьи','ВремяСозданияСтатьи','КраткаяВерсия','Тематика','Картинка'];
-        $listnews = DB::select('Select * From ArticlesInfo Where [Пункт меню]=?', [$name1]);
-        for($i=0;$i<Count($listnews);$i++){
-            $data['listnews'][$i] = [];
-            $j = 0;
-            foreach ($listnews[$i] as $element){
-                $data['listnews'][$i][$titles[$j]] = $element;
-                $j++;
-            }
-        }
-        $news = DB::select('SELECT [Статья].[Id статьи], Название, Наименование, Текст, Тематика, [Время создания], [Краткая версия статьи]
+        $listnews = DB::select('Select Страница, [ID пункта меню] "IDПунктаМеню", Язык,  [ID статьи] "IDСтатьи",
+                                      [Название статьи] "НазваниеСтатьи", [Текст статьи] "ТекстСтатьи",
+                                      [Время создания статьи] "ВремяСозданияСтатьи", [Краткая версия статьи] "КраткаяВерсия",
+                                      Тематика, [Картинка статьи] "Картинка", [Пункт меню] "ПунктМеню"
+                                      From ArticlesInfo Where [ID пункта меню]=? AND [Язык]=?', [$menuid,$lang]);
+        $data['listnews']=$listnews;
+        /*$news = DB::select('SELECT [Статья].[Id статьи], Название, Наименование, Текст, Тематика, [Время создания], [Краткая версия статьи]
                                   FROM [Статьи пункты меню] INNER JOIN [Статья]
                                   ON [Статьи пункты меню].[ID статьи]=[Статья].[ID статьи] INNER JOIN [Представление меню]
                                   ON [Статьи пункты меню].[ID пункта меню]=[Представление меню].[ID пункта меню]
@@ -70,8 +48,8 @@ class PageController extends Controller
                 $data['news'][$i][$titles[$j]] = $element;
                 $j++;
             }
-        }
-        $data['ПунктМеню']=$name1;
+        }*/
+        $data['ПунктМеню']=DB::select('SELECT ID, [Язык подчинённого] "ЯзыкПодчинённого" FROM Menu WHERE [ID]=? AND [Язык подчинённого]=?',[$menuid,$lang])[0];
         return view ('News',['data'=>$data]);
     }
     public function CreateNews($MenuName,$PageName){
@@ -90,25 +68,29 @@ class PageController extends Controller
             }
             $Page = $data;
             $Menu = DB::select('SELECT * FROM Menu WHERE [Подчинённый] = ?',[$MenuName])[0];
-            $titles = ['ID','Подчинённый','УровеньМеню','ЯзыкПодчинённого','Тип','Ссылка','ПорядокОтображения','IDСтатьи','IDРодителя','Родитель'];
+            $titles = ['ID','Подчинённый','УровеньМеню','ЯзыкПодчинённого','Тип','Ссылка','ПорядокОтображения','IDСтатьи','IDКартинки','IDРодителя','Родитель'];
             $j=0;
             $data = [];
             foreach ($Menu as $item){
                 $data['menu'][$titles[$j]] = $item;
                 $j++;
             }
+            $langs = DB::select('SELECT [ID Языка] "IDЯзыка", Наименование FROM Языки');
+            $data['menulangs'] = $langs;
             $data['page'] = $Page;
             return view('CreateNews',['data'=>$data]);
         }
         else{
             $Menu = DB::select('SELECT * FROM Menu WHERE [Подчинённый] = ?',[$MenuName])[0];
-            $titles = ['ID','Подчинённый','УровеньМеню','ЯзыкПодчинённого','Тип','Ссылка','ПорядокОтображения','IDСтатьи','IDРодителя','Родитель'];
+            $titles = ['ID','Подчинённый','УровеньМеню','ЯзыкПодчинённого','Тип','Ссылка','ПорядокОтображения','IDСтатьи','IDКартинки','IDРодителя','Родитель'];
             $j=0;
             $data = [];
             foreach ($Menu as $item){
                 $data['menu'][$titles[$j]] = $item;
                 $j++;
             }
+            $langs = DB::select('SELECT [ID Языка] "IDЯзыка", Наименование FROM Языки');
+            $data['menulangs'] = $langs;
             return view('CreateNews',['data'=>$data]);
         }
     }
@@ -154,16 +136,16 @@ class PageController extends Controller
         DB::statement('EXECUTE DeleteArticle ?',[$Id]);
         return redirect()->route('index');
     }
-    public function CreatePage($Menu){
-        return view('CreatePage',['Menu'=>$Menu]);
+    public function CreatePage($menuid,$lang){
+        $data['menuid']=$menuid;
+        $data['lang']=$lang;
+        $langs = DB::select('SELECT [ID Языка] "IDЯзыка", Наименование FROM Языки');
+        $data['menulangs'] = $langs;
+        return view('CreatePage',['data'=>$data]);
     }
     public function SavePage(Request $request){
-        $language = DB::select('SELECT [Язык подчинённого] FROM Menu WHERE [Подчинённый]=?',[$request->input('Menu')])[0];
-        foreach ($language as $lang){
-            $language = $lang;
-        }
-        DB::statement('EXECUTE AddPage ?,?',[$request->input('name'),$language]);
-        DB::statement('EXECUTE AddPageMenu ?,?',[$request->input('name'),$request->input('Menu')]);
+        DB::statement('EXECUTE AddPage ?,?',[$request->input('name'),$request->input('menulang')]);
+        DB::statement('EXECUTE AddPageMenu ?,?',[$request->input('name'),$request->input('menuid')]);
         return redirect()->route('index');
     }
     public function DeletePage($Name){
@@ -174,7 +156,10 @@ class PageController extends Controller
     {
         $news = DB::select('SELECT [Id статьи] "IdСтатьи", Страница, [Пункт меню] "ПунктМеню", Язык, [Название статьи] "НазваниеСтатьи", [Текст статьи] "ТекстСтатьи", [Краткая версия статьи] "КраткаяВерсия",
         Тематика, [Картинка статьи] "Картинка" FROM ArticlesInfo WHERE [Id статьи]=?',[$id])[0];
-        return view('EditNews',['data'=>$news]);
+        $langs = DB::select('SELECT [ID Языка] "IDЯзыка", Наименование FROM Языки');
+        $data['menulangs'] = $langs;
+        $data['news']=$news;
+        return view('EditNews',['data'=>$data]);
     }
     public function UpdateNews($id, Request $request)
     {

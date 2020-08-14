@@ -14,31 +14,31 @@
             <div class="col-md-2"></div>
             <div class="col-md-6">
                 <h3>Редактирование статьи</h3>
-                <form action="{{route('UpdateNews',$data->IdСтатьи)}}" method="post" enctype="multipart/form-data">
+                <form action="{{route('UpdateNews',$data['news']->IdСтатьи)}}" method="post" enctype="multipart/form-data">
                     <meta name="csrf-token" content="{{ csrf_token() }}">
-                    <input type="hidden" value="{{$data->ПунктМеню}}" name="menupunct">
+                    <input type="hidden" value="{{$data['news']->ПунктМеню}}" name="menupunct">
                     <div class="form-group">
                         <label for="name">Введите название</label><br>
-                        <input value="{{$data->НазваниеСтатьи}}" style="width: 30rem" type="text" name="name" id="name">
+                        <input value="{{$data['news']->НазваниеСтатьи}}" style="width: 30rem" type="text" name="name" id="name">
                     </div>
                     <div>
                         <label for="topic">Введите тему</label><br>
-                        <input value="{{$data->Тематика}}" style="width: 30rem" type="text" name="topic" id="topic">
+                        <input value="{{$data['news']->Тематика}}" style="width: 30rem" type="text" name="topic" id="topic">
                     </div>
                     <div class="form-group" id="imagegroup">
                         <label for="file">Загрузите фотографию</label><br>
                         <input type="file" name="image" id="image"><br>
                         <img id="imgfile" style="max-width:100%;height:auto;">
-                        <input name="idimage" src="@isset($data->Картинка)http://109.123.155.178:8080/api/media/img/{{$data->Картинка}}@endisset" type="hidden" id="imgid">
+                        <input name="idimage" src="@isset($data['news']->Картинка)http://109.123.155.178:8080/api/media/img/{{$data->Картинка}}@endisset" type="hidden" id="imgid">
                     </div>
                     <div class="form-group">
                         <label for="text">Введите короткий текст</label><br>
-                        <textarea name="description" cols="55" rows="10" id="text">{{$data->КраткаяВерсия}}</textarea>
+                        <textarea name="description" cols="55" rows="10" id="text">{{$data['news']->КраткаяВерсия}}</textarea>
                     </div>
                     <div class="form-group">
                         <label for="redactor">Введте текст</label><br>
                         {{csrf_field()}}
-                        <textarea name="text" cols="55" rows="10" id="redactor">{{$data->ТекстСтатьи}}</textarea>
+                        <textarea name="text" cols="55" rows="10" id="redactor">{{$data['news']->ТекстСтатьи}}</textarea>
                     </div>
                     <button type="submit" class="btn btn-light">Отправить</button>
                 </form>

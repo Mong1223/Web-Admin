@@ -7,25 +7,25 @@
                     <ul class="nav flex-column">
                         @for($i=0;$i<Count($data['menu']);$i++)
                              <li class="row row-nav" style="height: auto">
-                                 <div class="nav-item col-md-8" onclick="submenushow({{$i}})" style="cursor: pointer">
-                                    @if($data['menu'][$i]['Тип']=='FEED_LIST')
-                                        <a href="{{route('GetNews', $data['menu'][$i]['Подчинённый'])}}" style="text-decoration: none;">
-                                            {{$data['menu'][$i]['Подчинённый']}}
+                                 <div class="nav-item col-md-8" style="cursor: pointer">
+                                    @if($data['menu'][$i]->Тип=='FEED_LIST')
+                                        <a href="{{route('GetNews', [$data['menu'][$i]->ID,$data['menu'][$i]->ЯзыкПодчинённого])}}" style="text-decoration: none;">
+                                            {{$data['menu'][$i]->Подчинённый}}
                                            </a>
                                     @else
-                                        @if($data['menu'][$i]['Тип']=='LINKS_LIST')
-                                            <a href="{{route('GetSubMenu',$data['menu'][$i]['ID'])}}" style="text-decoration: none">
-                                                {{$data['menu'][$i]['Подчинённый']}}
+                                        @if($data['menu'][$i]->Тип=='LINKS_LIST')
+                                            <a href="{{route('GetSubMenu',[$data['menu'][$i]->ID,$data['menu'][$i]->ЯзыкПодчинённого])}}" style="text-decoration: none">
+                                                {{$data['menu'][$i]->Подчинённый}}
                                             </a>
                                         @else
-                                            {{$data['menu'][$i]['Подчинённый']}}
+                                            {{$data['menu'][$i]->Подчинённый}}
                                         @endif
                                     @endif
                                  </div>
-                                 <a class="col-md-2 close" style="color: white" href="{{route('DeleteMenu',$data['menu'][$i]['ID'])}}" aria-label="Close">
+                                 <a class="col-md-2 close" style="color: white" href="{{route('DeleteMenu',$data['menu'][$i]->ID)}}" aria-label="Close">
                                      <span aria-hidden="true">&times;</span>
                                  </a>
-                                 <a class="col-md-2" style="margin-top: 0.2rem" href="{{route('EditMenu',$data['menu'][$i]['Подчинённый'])}}">
+                                 <a class="col-md-2" style="margin-top: 0.2rem" href="{{route('EditMenu',$data['menu'][$i]->ID)}}">
                                      <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-pencil" fill="white" xmlns="http://www.w3.org/2000/svg">
                                          <path fill-rule="evenodd" d="M11.293 1.293a1 1 0 0 1 1.414 0l2 2a1 1 0 0 1 0 1.414l-9 9a1 1 0 0 1-.39.242l-3 1a1 1 0 0 1-1.266-1.265l1-3a1 1 0 0 1 .242-.391l9-9zM12 2l2 2-9 9-3 1 1-3 9-9z"/>
                                          <path fill-rule="evenodd" d="M12.146 6.354l-2.5-2.5.708-.708 2.5 2.5-.707.708zM3 10v.5a.5.5 0 0 0 .5.5H4v.5a.5.5 0 0 0 .5.5H5v.5a.5.5 0 0 0 .5.5H6v-1.5a.5.5 0 0 0-.5-.5H5v-.5a.5.5 0 0 0-.5-.5H3z"/>
@@ -63,13 +63,13 @@
                                     @isset($data['menus'][$i+$j]->Подчинённый)
                                         <div class="col-md-4">
                                             @if($data['menus'][$i+$j]->Тип=='FEED_LIST')
-                                                <a href="{{route('GetNews',$data['menus'][$i+$j]->Подчинённый)}}" style="color: #1b1e21; text-decoration: none">
+                                                <a href="{{route('GetNews',[$data['menus'][$i+$j]->ID,$data['menus'][$i+$j]->ЯзыкПодчинённого])}}" style="color: #1b1e21; text-decoration: none">
                                                     <div style="border: 1px solid #d7dfe3; margin-bottom: 2rem">
                                                         <img style="width: 100%; height: 70%" src="/images/fon{{rand(1,5)}}.jpg" alt="">
                                                         <h5 style="margin-top: 0.6rem;margin-left: 0.4rem;margin-bottom: 1rem">{{$data['menus'][$i+$j]->Подчинённый}}</h5>
                                                         <div class="row" style="margin-bottom: 0.6rem">
                                                             <div class="col-md-1"></div>
-                                                            <a class="btn btn-primary col-md-4" href="{{route('EditMenu',$data['menus'][$i+$j]->Подчинённый)}}">
+                                                            <a class="btn btn-primary col-md-4" href="{{route('EditMenu',$data['menus'][$i+$j]->ID)}}">
                                                                 Редактировать
                                                             </a>
                                                             <div class="col-md-2"></div>
@@ -82,13 +82,13 @@
                                                 </a>
                                             @endif
                                             @if($data['menus'][$i+$j]->Тип=='LINKS_LIST')
-                                                <a href="{{route('GetSubMenu',$data['menus'][$i+$j]->ID)}}" style="color: #1b1e21; text-decoration: none">
+                                                <a href="{{route('GetSubMenu',[$data['menus'][$i+$j]->ID,$data['menus'][$i+$j]->ЯзыкПодчинённого])}}" style="color: #1b1e21; text-decoration: none">
                                                     <div style="border: 1px solid #d7dfe3; margin-bottom: 2rem">
                                                         <img style="width: 100%; height: 70%" src="/images/fon{{rand(1,5)}}.jpg" alt="">
                                                         <h5 style="margin-top: 0.6rem;margin-left: 0.4rem;margin-bottom: 1rem">{{$data['menus'][$i+$j]->Подчинённый}}</h5>
                                                         <div class="row" style="margin-bottom: 0.6rem">
                                                             <div class="col-md-1"></div>
-                                                            <a class="btn btn-primary col-md-4" href="{{route('EditMenu',$data['menus'][$i+$j]->Подчинённый)}}">
+                                                            <a class="btn btn-primary col-md-4" href="{{route('EditMenu',$data['menus'][$i+$j]->ID)}}">
                                                                 Редактировать
                                                             </a>
                                                             <div class="col-md-2"></div>
@@ -106,7 +106,7 @@
                                                     <h5 style="margin-top: 0.6rem;margin-left: 0.4rem;margin-bottom: 1rem">{{$data['menus'][$i+$j]->Подчинённый}}</h5>
                                                     <div class="row" style="margin-bottom: 0.6rem">
                                                         <div class="col-md-1"></div>
-                                                        <a class="btn btn-primary col-md-4" href="{{route('EditMenu',$data['menus'][$i+$j]->Подчинённый)}}">
+                                                        <a class="btn btn-primary col-md-4" href="{{route('EditMenu',$data['menus'][$i+$j]->ID)}}">
                                                             Редактировать
                                                         </a>
                                                         <div class="col-md-2"></div>

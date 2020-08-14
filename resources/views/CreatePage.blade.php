@@ -16,7 +16,8 @@
                 <h3>Добавление страницы</h3>
                 <form action="{{route('SavePage')}}" method="post" enctype="multipart/form-data">
                     <meta name="csrf-token" content="{{ csrf_token() }}">
-                    <input type="hidden" name="Menu" id="Menu" value="{{$Menu}}">
+                    <input type="hidden" name="menuid" id="menuid" value="{{$data['menuid']}}">
+                    <input type="hidden" name="menulang" id="menulang" value="{{$data['lang']}}">
                     <div class="form-group">
                         {{csrf_field()}}
                         <label for="name">Введите название</label><br>

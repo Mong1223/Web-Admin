@@ -11,55 +11,36 @@ use PHPUnit\Framework\Constraint\Count;
 class MenuController extends Controller
 {
     public function GetMenu(){
-        $menu = DB::select("SELECT * FROM Menu WHERE [Уровень меню]=1 AND [Язык подчинённого]= 'Русский' ORDER BY [Уровень меню], [Порядок отображения]");
-        $data['menu'] = [];
-        $titles = ['ID','Подчинённый','УровеньМеню','ЯзыкПодчинённого','Тип','Ссылка','ПорядокОтображения','IDСтатьи','IDРодителя','Родитель'];
-        for($i=0;$i<Count($menu);$i++){
-            $data['menu'][$i] = [];
-            $j = 0;
-            foreach ($menu[$i] as $element){
-                $data['menu'][$i][$titles[$j]] = $element;
-                $j++;
-            }
-        }
+        $menu = DB::select("SELECT ID,Подчинённый, [Уровень меню] 'УровеньМеню',
+                                  [Язык подчинённого] 'ЯзыкПодчинённого',Тип, Ссылка, [Порядок отображения] 'ПорядокОтображения',
+                                  [ID статьи] 'IDCтатьи', [ID картинки] 'IDКартинки',[ID родителя] 'IDРодителя', Родитель
+                                  FROM Menu WHERE [Уровень меню]=1 AND [Язык подчинённого]= 'rus' ORDER BY [Уровень меню], [Порядок отображения]");
+        $data['menu'] = $menu;
         $langs = DB::select('SELECT [ID Языка] "IDЯзыка", Наименование FROM Языки');
         $data['menulangs'] = $langs;
         return view ('index',['data'=>$data]);
     }
     public function GetMenuByLang($name)
     {
-        $menu = DB::select('SELECT * FROM Menu WHERE [Уровень меню]=1 AND [Язык подчинённого] = ?',[$name]);
-        $data['menu'] = [];
-        $titles = ['ID','Подчинённый','УровеньМеню','ЯзыкПодчинённого','Тип','Ссылка','ПорядокОтображения','IDСтатьи','IDРодителя','Родитель'];
-        for($i=0;$i<Count($menu);$i++){
-            $data['menu'][$i] = [];
-            $j = 0;
-            foreach ($menu[$i] as $element){
-                $data['menu'][$i][$titles[$j]] = $element;
-                $j++;
-            }
-        }
+        $menu = DB::select('SELECT ID, Подчинённый, [Уровень меню] "УровеньМеню", [Язык подчинённого] "ЯзыкПодчинённого",
+                                  Тип, Ссылка, [Порядок отображения] "ПорядокОтображения", [ID статьи] "IDСтатьи",
+                                  [ID картинки] "IDКартинки", [ID родителя] "IDРодителя", Родитель
+                                  FROM Menu WHERE [Уровень меню]=1 AND [Язык подчинённого] = ?',[$name]);
+        $data['menu'] = $menu;
         $langs = DB::select('SELECT [ID Языка] "IDЯзыка", Наименование FROM Языки');
         $data['menulangs'] = $langs;
         return view ('index',['data'=>$data]);
     }
-    public function GetSubMenu($id)
+    public function GetSubMenu($id,$lang)
     {
-        $lang = DB::select('SELECT [Язык подчинённого] "ЯзыкПодчинённого" FROM Menu WHERE ID = ?',[$id])[0];
-        $menu = DB::select('SELECT * FROM Menu WHERE [Уровень меню]=1 AND [Язык подчинённого]=? ORDER BY [Уровень меню], [Порядок отображения]',[$lang->ЯзыкПодчинённого]);
-        $data['menu'] = [];
-        $titles = ['ID','Подчинённый','УровеньМеню','ЯзыкПодчинённого','Тип','Ссылка','ПорядокОтображения','IDСтатьи','IDРодителя','Родитель'];
-        for($i=0;$i<Count($menu);$i++){
-            $data['menu'][$i] = [];
-            $j = 0;
-            foreach ($menu[$i] as $element){
-                $data['menu'][$i][$titles[$j]] = $element;
-                $j++;
-            }
-        }
+        $menu = DB::select('SELECT ID, Подчинённый, [Уровень меню] "УровеньМеню", [Язык подчинённого] "ЯзыкПодчинённого",
+                                  Тип, Ссылка, [Порядок отображения] "ПорядокОтображения", [ID статьи] "IDСтатьи",
+                                  [ID картинки] "IDКартинки", [ID родителя] "IDРодителя", Родитель
+                                  FROM Menu WHERE [Уровень меню]=1 AND [Язык подчинённого] = ?',[$lang]);//Upper
+        $data['menu'] = $menu;
         $menu = DB::select('SELECT ID,Подчинённый,[Уровень меню] "УровеньМеню",[Язык подчинённого] "ЯзыкПодчинённого",Тип,
                                   Ссылка, [Порядок отображения] "ПорядокОтображения",[ID статьи] "IDСтатьи",[ID родителя] "IDРодителя",
-                                  Родитель FROM Menu WHERE [ID родителя]=?',[$id]);
+                                  Родитель FROM Menu WHERE [ID родителя]=? AND [Язык подчинённого]=?',[$id,$lang]);//Sub
         $data['menus'] = $menu;
         $data['IDUpper'] = $id;
         $langs = DB::select('SELECT [ID Языка] "IDЯзыка", Наименование FROM Языки');
@@ -67,48 +48,41 @@ class MenuController extends Controller
         return view('index',['data'=>$data]);
     }
     public function CreateUpMenu(){
-        $menu = DB::select('SELECT TOP(1) [Порядок отображения] FROM Menu WHERE [Уровень меню] = ? ORDER BY [Порядок отображения] DESC', [1]);
-        $data['ПорядокОтображения'] = 0;
-        for($i=0;$i<Count($menu);$i++){
-            $j = 0;
-            foreach ($menu[$i] as $element){
-                $data['ПорядокОтображения'] = $element;
-                $j++;
-            }
-        }
-        $data['ПорядокОтображения'] = (int) $data['ПорядокОтображения'] + 1;
-        $langs = DB::select('SELECT * FROM Языки');
-        $titles = ['ID','Наименование'];
-        for($i=0;$i<Count($langs);$i++){
-            $data['langs'][$i] = [];
-            $j = 0;
-            foreach ($langs[$i] as $element){
-                $data['langs'][$i][$titles[$j]] = $element;
-                $j++;
-            }
-        }
+        $langs = DB::select('SELECT [Id языка] "ID", Наименование FROM Языки');
+        $data['langs'] = $langs;
         $data['level']=1;
-        //dd($data);
         return view('CreateMenu',['data'=>$data]);
     }
     public function SaveMenu(Request $request){
+        dd($request);
+        $langs = DB::select('SELECT [ID языка], Наименование FROM [Языки]');
         $upper = $request->input('nameUpperMenu');
-        $idupper = DB::select('SELECT [ID] FROM Menu WHERE [Подчинённый]=?',[$upper])[0]->ID;
+        if($upper!=null){
+            $idupper = DB::select('SELECT [ID] FROM Menu WHERE [Подчинённый]=?',[$upper])[0]->ID;
+        }
         $date = getdate();
         $text = '<!DOCTYPE HTML><html><head><meta charset=\"utf-8\"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">'.'<title>'.$request->input('name').'</title>'.'</head>'.'<body>'.
             '<time datetime="'.$date['year'].'-'.$date['mon'].'-'.$date['mday'].'" title="'.($date['hours']+7).':'.$date['minutes'].', '.$date['mday'].' '.$date['mon'].' '. $date['year'].'"></time>'. $request->input('text').'</body>'.'</html>';
+        $order = DB::select('SELECT MAX([Порядок отображения]) "ПорядокОтображения"
+                                   FROM Menu WHERE [Язык подчинённого]=? AND [Уровень меню] = ?',
+            [$request->input("lang".$langs[0]->Наименование),$request->input('level')])[0]->ПорядокОтображения;
         if($request->input('type')=='LINK'){
-            DB::statement('EXECUTE AddMenuItem ?,?,?,?,?,?,?',[$request->input('level'),$request->input('name'),
-                $upper,$request->input('Language'),$request->input('order'),
+            DB::statement('EXECUTE AddMenuItem ?,?,?,?,?,?,?',[$request->input('level'),$request->input("name".$langs[0]->Наименование),
+                $upper,$request->input("lang".$langs[0]->Наименование),$order,
                 $request->input('type'),$request->input('link')]);
+            $menuid = DB::select('SELECT ID FROM Menu WHERE [Подчинённый] = ?', [$request->input("name".$langs[0]->Наименование)]);
+            for($i=1;$i<Count($langs);$i++){
+                DB::statement('INSERT INTO [Представление меню]([ID меню],[Наименование],[ID языка])
+                                     VALUES (?,?,?)',[$menuid,$request->input("name".$langs[$i]->Наименование),$langs[$i]->ID]);
+            }
         }
         if($request->input('type')=='ARTICLE'){
-            DB::statement('EXECUTE AddMenuItem ?,?,?,?,?,?,?',[$request->input('level'),$request->input('name'),
-                $upper,$request->input('Language'),$request->input('order'),
+            DB::statement('EXECUTE AddMenuItem ?,?,?,?,?,?,?',[$request->input('level'),$request->input("name".$langs[0]->Наименование),
+                $upper,$request->input("lang".$langs[0]->Наименование),$order,
                 $request->input('type'),null]);
             DB::statement('EXECUTE AddArticle ?,?,?,?,?,?',[$request->input('namearticle'),
-                $text,$request->input('topicarticle'),$request->input('Language'),
+                $text,$request->input('topicarticle'),$request->input("lang".$langs[0]->Наименование),
                 $request->input('description'),$request->input('idimage')]);
             DB::statement('DECLARE @IdArticle UNIQUEIDENTIFIER
                                  DECLARE @IdMenu UNIQUEIDENTIFIER
@@ -120,11 +94,22 @@ class MenuController extends Controller
                                  WHERE [Представление меню].[Наименование]=?
                                  INSERT INTO [Статьи пункты меню]([ID Пункта меню], [ID статьи]) VALUES(@IdMenu,@IdArticle)',
                 [$request->input('namearticle'),$request->input('name')]);
+            $menuid = DB::select('SELECT ID FROM Menu WHERE [Подчинённый] = ?', [$request->input("name".$langs[0]->Наименование)]);
+            for($i=1;$i<Count($langs);$i++){
+                DB::statement('INSERT INTO [Представление меню]([ID меню],[Наименование],[ID языка])
+                                     VALUES (?,?,?)',[$menuid,$request->input("name".$langs[$i]->Наименование),$langs[$i]->ID]);
+            }
         }
         if($request->input('type')!='LINK'&&$request->input('type')!='ARTICLE'){
-            DB::statement('EXECUTE AddMenuItem ?,?,?,?,?,?,?',[$request->input('level'),$request->input('name'),
-                $upper,$request->input('Language'),$request->input('order'),
+            DB::statement('EXECUTE AddMenuItem ?,?,?,?,?,?,?',
+                [$request->input('level'),$request->input("name".$langs[0]->Наименование),
+                $upper,$request->input("lang".$langs[0]->Наименование),$order,
                 $request->input('type'),null]);
+            $menuid = DB::select('SELECT ID FROM Menu WHERE [Подчинённый] = ?', [$request->input("name".$langs[0]->Наименование)]);
+            for($i=1;$i<Count($langs);$i++){
+                DB::statement('INSERT INTO [Представление меню]([ID меню],[Наименование],[ID языка])
+                                     VALUES (?,?,?)',[$menuid,$request->input("name".$langs[$i]->Наименование),$langs[$i]->ID]);
+            }
         }
         return redirect()->route('GetSubMenu',$idupper);
     }
@@ -133,39 +118,13 @@ class MenuController extends Controller
         return redirect()->route('index');
     }
     public function CreateSubMenu($Id){
-        $menu = DB::select('SELECT * FROM Menu WHERE [ID] = ? ORDER BY [Уровень меню], [Порядок отображения]',[$Id]);
-        $data['uppermenu'] = [];
-        $titles = ['ID','Подчинённый','УровеньМеню','ЯзыкПодчинённого','Тип','Ссылка','ПорядокОтображения','IDСтатьи','IDРодителя','Родитель'];
-        for($i=0;$i<Count($menu);$i++){
-            $j = 0;
-            foreach ($menu[$i] as $element){
-                $data['uppermenu'][$titles[$j]] = $element;
-                $j++;
-            }
-        }
-        $order = DB::select('SELECT TOP(1) [Порядок отображения] FROM Menu
-                                   WHERE [Уровень меню] = ? AND [ID родителя] = ?
-                                   ORDER BY [Порядок отображения] DESC',
-                                   [(int)$data['uppermenu']['УровеньМеню']+1,$data['uppermenu']['ID']]);
-        $data['ПорядокОтображения'] = 0;
-        for($i=0;$i<Count($order);$i++){
-            $j = 0;
-            foreach ($order[$i] as $element){
-                $data['ПорядокОтображения'] = $element;
-                $j++;
-            }
-        }
-        $data['ПорядокОтображения'] = (int) $data['ПорядокОтображения'] + 1;
-        $langs = DB::select('SELECT * FROM Языки');
-        $titles = ['ID','Наименование'];
-        for($i=0;$i<Count($langs);$i++){
-            $data['langs'][$i] = [];
-            $j = 0;
-            foreach ($langs[$i] as $element){
-                $data['langs'][$i][$titles[$j]] = $element;
-                $j++;
-            }
-        }
+        $menu = DB::select('SELECT ID, Подчинённый, [Уровень меню] "УровеньМеню", [Язык подчинённого] "ЯзыкПодчинённого",
+                                  Тип, Ссылка, [Порядок отображения] "ПорядокОтображения",
+                                  [ID статьи] "IDСтатьи", [ID родителя] "IDРодителя", Родитель
+                                  FROM Menu WHERE [ID] = ?
+                                  ORDER BY [Уровень меню], [Порядок отображения]',[$Id]);
+        $data['uppermenu'] = $menu;
+        $langs = DB::select('SELECT ID,Наименование FROM Языки');
         $data['level']=(int)$data['uppermenu']['УровеньМеню']+1;
         //dd($data);
         return view('CreateMenu',['data'=>$data]);
@@ -175,7 +134,7 @@ class MenuController extends Controller
                                   [Язык подчинённого] 'Язык', Тип, Ссылка,
                                   [Порядок отображения] 'ПорядокОтображения',[Id статьи] 'IdСтатьи',
                                   [Id родителя] 'IdРодителя',Родитель
-                                  FROM Menu WHERE [Подчинённый]=?",[$name])[0];
+                                  FROM Menu WHERE [ID]=?",[$name])[0];
         $data['menu']= $menu;
         if($data['menu']->Тип=='ARTICLE'){
             $article = DB::select("SELECT [Статья].[Id статьи] 'IdСтатьи', Название, Текст, Тематика,
