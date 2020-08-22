@@ -28,8 +28,8 @@
                     <div class="form-group" id="imagegroup">
                         <label for="file">Загрузите фотографию</label><br>
                         <input type="file" name="image" id="image"><br>
-                        <img id="imgfile" style="max-width:100%;height:auto;">
-                        <input name="idimage" src="@isset($data['news']->Картинка)http://109.123.155.178:8080/api/media/img/{{$data->Картинка}}@endisset" type="hidden" id="imgid">
+                        <img id="imgfile" style="max-width:100%;height:auto;" src="@isset($data['news']->Картинка)http://109.123.155.178:8080/api/media/img/{{$data['news']->Картинка}}@endisset">
+                        <input name="idimage" value="{{$data['news']->Картинка}}" type="hidden" id="imgid">
                     </div>
                     <div class="form-group">
                         <label for="text">Введите короткий текст</label><br>

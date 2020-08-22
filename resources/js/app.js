@@ -3,6 +3,7 @@ $(document).ready(function () {
     $('#redactor').summernote({
         height: 500,
         width: 800,
+        lang: 'ru-RU',
         callbacks: {
             onImageUpload: function (files,editor,welEditable) {
                 sendFile(files[0],editor,welEditable);
@@ -19,33 +20,26 @@ $(document).ready(function () {
         if(menutype.selectedIndex==0){
             $('#menuarticle').show();
             $('#link').hide();
-            $('#linktext').innerText = "";
-        }
-        if(menutype.selectedIndex==1){
-            $('#link').show();
-            $('#menuarticle').hide();
             $('#namearticle').innerText = "";
             $('#topicarticle').innerText = "";
-            $('#descriptionarticle').innerText = "";
-            $('#textarticle').innerText = "";
+            $('#image').innerHTML = "";
+            $('#imgfile').attr('src','');
+            $('#imgid').innerText = "";
+            $('descriptionarticle').innerText = "";
+            $('#redactor').innerText = "";
+        }
+        if(menutype.selectedIndex==1){
+            $('#linktext').innerText = "";
+            $('#link').show();
+            $('#menuarticle').hide();
         }
         if(menutype.selectedIndex==2){
             $('#link').hide();
             $('#menuarticle').hide();
-            $('#linktext').innerText = "";
-            $('#namearticle').innerText = "";
-            $('#topicarticle').innerText = "";
-            $('#descriptionarticle').innerText = "";
-            $('#textarticle').innerText = "";
         }
         if(menutype.selectedIndex==3){
             $('#link').hide();
             $('#menuarticle').hide();
-            $('#linktext').innerText = "";
-            $('#namearticle').innerText = "";
-            $('#topicarticle').innerText = "";
-            $('#descriptionarticle').innerText = "";
-            $('#textarticle').innerText = "";
         }
     });
     let hamburg = document.getElementById('hamburg');

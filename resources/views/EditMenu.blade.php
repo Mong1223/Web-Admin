@@ -18,6 +18,7 @@
                     <meta name="csrf-token" content="{{ csrf_token() }}">
                     <input type="hidden" name="level" id="page" value="{{$data['menu']->УровеньМеню}}">
                     <input type="hidden" name="ID" value="{{$data['menu']->ID}}">
+                    <input type="hidden" name="order" value="{{$data['menu']->ПорядокОтображения}}">
                     @isset($data['menu']->IdСтатьи)
                         <input type="hidden" name="IDArticle" value="{{$data['menu']->IdСтатьи}}">
                     @endisset
@@ -37,10 +38,6 @@
                             </select>
                         </div>
                     @endisset
-                    <div class="form-group">
-                        <label for="Order">Порядок отображения</label><br>
-                        <input type="text" style="width: 30rem" name="order" id="order" value="{{$data['menu']->ПорядокОтображения}}">
-                    </div>
                     <div class="form-group">
                         <label for="type">Тип пункта меню</label><br>
                         <select name="type" size="1" style="width: 30rem" id="type">
@@ -67,21 +64,17 @@
                         <div class="form-group" id="imagegroup">
                             <label for="file">Загрузите фотографию</label><br>
                             <input type="file" name="image" id="image">
-                            <img id="imgfile" src="@isset($data['article']->КартинкаСтатьи){{$data['article']->КартинкаСтатьи}}@endisset" style="max-width:100%;height:auto;">
-                            <input name="idimage" type="hidden" id="imgid">
+                            <img id="imgfile" style="max-width:100%;height:auto;">
+                            <input name="idimage" type="hidden" id="imgid" src="@isset($data['article']->КартинкаСтатьи)http://109.123.155.178:8080/api/media/img/{{$data['article']->КартинкаСтатьи}}@endisset">
                         </div>
                         <div class="form-group">
                             <label for="description">Введите короткий текст</label><br>
-                            <textarea name="description" cols="55" rows="10" id="descriptionarticle">
-                                @isset($data['article']){{$data['article']->КраткаяВерсияСтатьи}}@endisset
-                            </textarea>
+                            <textarea name="description" cols="55" rows="10" id="descriptionarticle">@isset($data['article']){{$data['article']->КраткаяВерсия}}@endisset</textarea>
                         </div>
                         <div class="form-group">
                             <label for="redactor">Введте текст</label><br>
                             {{csrf_field()}}
-                            <textarea name="text" cols="55" rows="10" id="redactor">
-                                @isset($data['article']){{$data['article']->Текст}}@endisset
-                            </textarea>
+                            <textarea name="text" cols="55" rows="10" id="redactor">@isset($data['article']){{$data['article']->Текст}}@endisset</textarea>
                         </div>
                     </div>
                     <button type="submit" class="btn btn-light">Отправить</button>

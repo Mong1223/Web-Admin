@@ -113,7 +113,8 @@ class PageController extends Controller
                                  INSERT INTO [Статьи пункты меню]([Id статьи], [Id пункта меню])
                                  VALUES(@IdPage,?)',[$request->input('name'),$request->input('IDMenu')]);
         }
-        return redirect()->route('GetNews',$request->input('menupunct'));
+        $menuid = DB::select('SELECT ID FROM Menu WHERE Подчинённый=?',[$request->input('menupunct')])[0]->ID;
+        return redirect()->route('GetNews',[$menuid,$request->input('language')]);
     }
     public function SaveImage(Request $request){
         $file = $request->file;
@@ -130,11 +131,13 @@ class PageController extends Controller
             $id = $elem;
         }
         $url = $url . $id;
+        $url = "http://109.123.155.178:8080/api/media/img/45ECF33D-3B36-4AAC-950B-AC02E8433636";
         return $url;
     }//Тут всё работает не трогать!!!
     public function DeleteNews($Id){
+        $article = DB::select('SELECT [Id пункта меню] "IdПунктаМеню", Язык FROM ArticlesInfo WHERE [Id статьи] = ?',[$Id])[0];
         DB::statement('EXECUTE DeleteArticle ?',[$Id]);
-        return redirect()->route('index');
+        return redirect()->route('GetNews',[$article->IdПунктаМеню,$article->Язык]);
     }
     public function CreatePage($menuid,$lang){
         $data['menuid']=$menuid;
@@ -163,14 +166,12 @@ class PageController extends Controller
     }
     public function UpdateNews($id, Request $request)
     {
-        $date = getdate();
-        $month = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октабря','ноября','декабря'];
-        $text = '<!DOCTYPE HTML><html><head><meta charset=\"utf-8\"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">'.'<title>'.$request->input('name').'</title>'.'</head>'.'<body>'.
-            '<time datetime="'.$date['year'].'-'.$date['mon'].'-'.$date['mday'].'" title="'.($date['hours']+7).':'.$date['minutes'].', '.$date['mday'].' '.$date['month'].' '. $date['year'].'">'.$date['mday'].' '.$month[$date['mon']-1].' '.$date['year'].'</time>'. $request->input('text').'</body>'.'</html>';
+        $text = $request->input('text');
         DB::statement('UPDATE Статья
                              SET Название = ?, Текст = ?, [Краткая версия статьи] = ?, Тематика = ?, [Картинка статьи] = ?
                              WHERE [Id статьи] = ?',[$request->input('name'),$text,$request->input('description'),$request->input('topic'),$request->input('idimage'), $id]);
-        return redirect()->route('GetNews',$request->input('menupunct'));
+        $lang = DB::select('SELECT Язык FROM ArticlesInfo WHERE [Id статьи] = ?', [$id])[0]->Язык;
+        $menuid = DB::select('SELECT ID FROM Menu WHERE Подчинённый=?',[$request->input('menupunct')])[0]->ID;
+        return redirect()->route('GetNews',[$menuid,$lang]);
     }
 }
