@@ -4,15 +4,17 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use mysql_xdevapi\Exception;
 use Psr\Http\Message\RequestInterface;
 
 class PageController extends Controller
 {
-    public function GetNews($menuid,$lang){
+    public function GetNews($menuid, $lang){
         $menu = DB::select("SELECT ID,Подчинённый, [Уровень меню] 'УровеньМеню',
                                   [Язык подчинённого] 'ЯзыкПодчинённого',Тип, Ссылка, [Порядок отображения] 'ПорядокОтображения',
                                   [ID статьи] 'IDCтатьи', [ID картинки] 'IDКартинки',[ID родителя] 'IDРодителя', Родитель
-                                  FROM Menu WHERE [Уровень меню]=1 AND [Язык подчинённого]= 'rus' ORDER BY [Уровень меню], [Порядок отображения]");
+                                  FROM Menu WHERE [Уровень меню]=1 AND [Язык подчинённого]= ? ORDER BY [Уровень меню], [Порядок отображения]",
+                                  [$lang]);
         $data['menu'] = $menu;
         $langs = DB::select('SELECT [ID Языка] "IDЯзыка", Наименование FROM Языки');
         $data['menulangs'] = $langs;
@@ -35,49 +37,59 @@ class PageController extends Controller
                                       Тематика, [Картинка статьи] "Картинка", [Пункт меню] "ПунктМеню"
                                       From ArticlesInfo Where [ID пункта меню]=? AND [Язык]=?', [$menuid,$lang]);
         $data['listnews']=$listnews;
-        /*$news = DB::select('SELECT [Статья].[Id статьи], Название, Наименование, Текст, Тематика, [Время создания], [Краткая версия статьи]
-                                  FROM [Статьи пункты меню] INNER JOIN [Статья]
-                                  ON [Статьи пункты меню].[ID статьи]=[Статья].[ID статьи] INNER JOIN [Представление меню]
-                                  ON [Статьи пункты меню].[ID пункта меню]=[Представление меню].[ID пункта меню]
-                                  WHERE [Представление меню].[Наименование] = ?',[$name1]);
-        $titles = ['IDСтатьи','Статья','ПунктМеню','ТекстСтатьи','Тематика','ВремяСозданияСтатьи','КраткаяВерсия'];
-        for($i=0;$i<Count($news);$i++){
-            $data['news'][$i] = [];
-            $j = 0;
-            foreach ($news[$i] as $element){
-                $data['news'][$i][$titles[$j]] = $element;
-                $j++;
-            }
-        }*/
         $data['ПунктМеню']=DB::select('SELECT ID, [Язык подчинённого] "ЯзыкПодчинённого" FROM Menu WHERE [ID]=? AND [Язык подчинённого]=?',[$menuid,$lang])[0];
+        $menus = [];
+        $menus[0] = DB::select("SELECT ID, Подчинённый, [Уровень меню] 'УровеньМеню', [Язык подчинённого] 'ЯзыкПодчинённого', Тип
+                                      FROM Menu WHERE ID=?",[$menuid])[0];
+        $level = $menus[0]->УровеньМеню;
+        $i = 1;
+        while($level!=1)
+        {
+            $punkt = DB::select("SELECT [ID родителя] 'IDРодителя' FROM Menu WHERE ID=?",[$menuid])[0]->IDРодителя;
+            $punkt = DB::select("SELECT ID, Подчинённый, [Уровень меню] 'УровеньМеню', [Язык подчинённого] 'ЯзыкПодчинённого',
+                                       Тип FROM Menu WHERE ID=?",[$punkt])[0];
+            $level = $punkt->УровеньМеню;
+            $menus[$i] = $punkt;
+            $menuid = $punkt->ID;
+        }
+        $menus = array_reverse($menus);
+        $data['menus']=$menus;
+        $data['header']=true;
+        //dd($data);
         return view ('News',['data'=>$data]);
     }
     public function CreateNews($MenuName,$PageName){
+        $data = [];
+        $menus = [];
+        $menuid = DB::select('SELECT [ID пункта меню] "ID" FROM ArticlesInfo WHERE [Пункт меню]=?',[$MenuName])[0]->ID;
+        $menus[0] = DB::select("SELECT ID, Подчинённый, [Уровень меню] 'УровеньМеню', [Язык подчинённого] 'ЯзыкПодчинённого', Тип
+                                      FROM Menu WHERE ID=?",[$menuid])[0];
+        $level = $menus[0]->УровеньМеню;
+        $i = 1;
+        while($level!=1)
+        {
+            $punkt = DB::select("SELECT [ID родителя] 'IDРодителя' FROM Menu WHERE ID=?",[$menuid])[0]->IDРодителя;
+            $punkt = DB::select("SELECT ID, Подчинённый, [Уровень меню] 'УровеньМеню', [Язык подчинённого] 'ЯзыкПодчинённого',
+                                       Тип FROM Menu WHERE ID=?",[$punkt])[0];
+            $level = $punkt->УровеньМеню;
+            $menus[$i] = $punkt;
+            $menuid = $punkt->ID;
+        }
+        $menus = array_reverse($menus);
+        $data['menus']=$menus;
         if($PageName!=" "){
-            $Page = DB::select('SELECT DISTINCT [Название],[Наименование] FROM [Страница] INNER JOIN
+            $Page = DB::select('SELECT DISTINCT [Название] "Страница",[Наименование] "Язык" FROM [Страница] INNER JOIN
                                       [Языки] ON [Страница].[ID языка] = [Языки].[Id языка] WHERE Название=?',[$PageName]);
-            $titles = ['Страница','Язык'];
-            $j=0;
-            $data = [];
-            for($i=0;$i<Count($Page);$i++){
-                $j = 0;
-                foreach ($Page[$i] as $element){
-                    $data[$titles[$j]] = $element;
-                    $j++;
-                }
-            }
-            $Page = $data;
-            $Menu = DB::select('SELECT * FROM Menu WHERE [Подчинённый] = ?',[$MenuName])[0];
-            $titles = ['ID','Подчинённый','УровеньМеню','ЯзыкПодчинённого','Тип','Ссылка','ПорядокОтображения','IDСтатьи','IDКартинки','IDРодителя','Родитель'];
-            $j=0;
-            $data = [];
-            foreach ($Menu as $item){
-                $data['menu'][$titles[$j]] = $item;
-                $j++;
-            }
+            $data['page'] = $Page[0];
+            $data['Страница'] = $data['page']->Страница;
+            $data['Язык'] = $data['page']->Язык;
+            $Menu = DB::select('SELECT ID, Подчинённый, [Уровень меню] "УровеньМеню", [Язык подчинённого] "ЯзыкПодчинённого",
+                                      Тип, Ссылка, [Порядок отображения] "ПорядокОтображения", [ID статьи] "IDСтатьи",
+                                      [ID картинки] "IDКартинки", [ID родителя] "IDРодителя", Родитель
+                                      FROM Menu WHERE [Подчинённый] = ?',[$MenuName])[0];
+            $data['menu'] = $Menu;
             $langs = DB::select('SELECT [ID Языка] "IDЯзыка", Наименование FROM Языки');
             $data['menulangs'] = $langs;
-            $data['page'] = $Page;
             return view('CreateNews',['data'=>$data]);
         }
         else{
@@ -131,7 +143,6 @@ class PageController extends Controller
             $id = $elem;
         }
         $url = $url . $id;
-        $url = "http://109.123.155.178:8080/api/media/img/45ECF33D-3B36-4AAC-950B-AC02E8433636";
         return $url;
     }//Тут всё работает не трогать!!!
     public function DeleteNews($Id){
@@ -162,6 +173,24 @@ class PageController extends Controller
         $langs = DB::select('SELECT [ID Языка] "IDЯзыка", Наименование FROM Языки');
         $data['menulangs'] = $langs;
         $data['news']=$news;
+        $menus = [];
+        $menuid = DB::select('SELECT [ID пункта меню] "ID" FROM ArticlesInfo WHERE [Id статьи]=?',[$id])[0]->ID;
+        $menus[0] = DB::select("SELECT ID, Подчинённый, [Уровень меню] 'УровеньМеню', [Язык подчинённого] 'ЯзыкПодчинённого', Тип
+                                      FROM Menu WHERE ID=?",[$menuid])[0];
+        $level = $menus[0]->УровеньМеню;
+        $i = 1;
+        while($level!=1)
+        {
+            $punkt = DB::select("SELECT [ID родителя] 'IDРодителя' FROM Menu WHERE ID=?",[$menuid])[0]->IDРодителя;
+            $punkt = DB::select("SELECT ID, Подчинённый, [Уровень меню] 'УровеньМеню', [Язык подчинённого] 'ЯзыкПодчинённого',
+                                       Тип FROM Menu WHERE ID=?",[$punkt])[0];
+            $level = $punkt->УровеньМеню;
+            $menus[$i] = $punkt;
+            $menuid = $punkt->ID;
+        }
+        $menus = array_reverse($menus);
+        $data['menus']=$menus;
+        //dd($data);
         return view('EditNews',['data'=>$data]);
     }
     public function UpdateNews($id, Request $request)

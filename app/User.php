@@ -15,8 +15,41 @@ class User extends Authenticatable
      *
      * @var array
      */
+    protected $table = 'Пользователь';
+
+    public $incrementing = false;
+
+    protected $keyType = 'string';
+
+    public $timestamps = false;
+
+    public function getAuthPassword()
+    {
+        return $this->Пароль;
+    }
+
+    public function getAuthIdentifier()
+    {
+        return $this->{'Id Пользователя'};
+    }
+
+    public function getAuthIdentifierName()
+    {
+        return 'Id Пользователя';
+    }
+
     protected $fillable = [
-        'name', 'email', 'password',
+        'Фамилия',
+        'Имя',
+        'Отчество',
+        'Пароль',
+        'remember_token',
+        'Роль',
+        'Пол' ,
+        'ID языка',
+        'refresh salt',
+        'Provider',
+        'Подтвержден'
     ];
 
     /**
@@ -25,7 +58,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'Id Пользователя','Пароль', 'remember_token', 'Роль', 'Пол' , 'ID языка', 'refresh salt','Provider','Подтвержден'
     ];
 
     /**

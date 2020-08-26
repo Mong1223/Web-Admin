@@ -47486,7 +47486,7 @@ $(document).ready(function () {
       $('#image').innerHTML = "";
       $('#imgfile').attr('src', '');
       $('#imgid').innerText = "";
-      $('descriptionarticle').innerText = "";
+      $('№descriptionarticle').innerText = "";
       $('#redactor').innerText = "";
     }
 
@@ -47529,35 +47529,6 @@ $(document).ready(function () {
     });
   }
 
-  var input = document.getElementById('image');
-  var group = document.getElementById('imagegroup');
-  input.addEventListener('change', function (event) {
-    var file = event.srcElement.files[0];
-    datafile = new FormData();
-    datafile.append("file", file);
-    $.ajax({
-      headers: {
-        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-      },
-      data: datafile,
-      type: "POST",
-      url: '/SaveNews/SaveImage',
-      cache: false,
-      contentType: false,
-      processData: false,
-      async: true,
-      success: function success(url) {
-        $('#imgfile').attr('src', url);
-        var id = url.substr(42);
-        $('#imgid').attr('value', id);
-      },
-      error: function error(jqXHR, textStatus, errorThrown) {
-        alert(textStatus);
-        alert(errorThrown);
-      }
-    });
-  });
-
   function sendFile(file, editor, welEditable) {
     datafile = new FormData();
     datafile.append("file", file);
@@ -47582,6 +47553,34 @@ $(document).ready(function () {
       }
     });
   }
+});
+var input = document.getElementById('image');
+var group = document.getElementById('imagegroup');
+input.addEventListener('change', function (event) {
+  var file = event.srcElement.files[0];
+  datafile = new FormData();
+  datafile.append("file", file);
+  $.ajax({
+    headers: {
+      'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    },
+    data: datafile,
+    type: "POST",
+    url: '/SaveNews/SaveImage',
+    cache: false,
+    contentType: false,
+    processData: false,
+    async: true,
+    success: function success(url) {
+      $('#imgfile').attr('src', url);
+      var id = url.substr(42);
+      $('#imgid').attr('value', id);
+    },
+    error: function error(jqXHR, textStatus, errorThrown) {
+      alert(textStatus);
+      alert(errorThrown);
+    }
+  });
 });
 
 /***/ }),

@@ -18,6 +18,7 @@ class MenuController extends Controller
         $data['menu'] = $menu;
         $langs = DB::select('SELECT [ID Языка] "IDЯзыка", Наименование FROM Языки');
         $data['menulangs'] = $langs;
+        $data['header']=true;
         return view ('index',['data'=>$data]);
     }
     public function GetMenuByLang($name)
@@ -29,6 +30,7 @@ class MenuController extends Controller
         $data['menu'] = $menu;
         $langs = DB::select('SELECT [ID Языка] "IDЯзыка", Наименование FROM Языки');
         $data['menulangs'] = $langs;
+        $data['header']=true;
         return view ('index',['data'=>$data]);
     }
     public function GetSubMenu($id,$lang)
@@ -45,6 +47,23 @@ class MenuController extends Controller
         $data['IDUpper'] = $id;
         $langs = DB::select('SELECT [ID Языка] "IDЯзыка", Наименование FROM Языки');
         $data['menulangs'] = $langs;
+        $mens = [];
+        $mens[0] = DB::select("SELECT ID, Подчинённый, [Уровень меню] 'УровеньМеню', [Язык подчинённого] 'ЯзыкПодчинённого', Тип
+                                      FROM Menu WHERE ID=?",[$id])[0];
+        $level = $mens[0]->УровеньМеню;
+        $i = 1;
+        while($level!=1)
+        {
+            $punkt = DB::select("SELECT [ID родителя] 'IDРодителя' FROM Menu WHERE ID=?",[$id])[0]->IDРодителя;
+            $punkt = DB::select("SELECT ID, Подчинённый, [Уровень меню] 'УровеньМеню', [Язык подчинённого] 'ЯзыкПодчинённого',
+                                       Тип FROM Menu WHERE ID=?",[$punkt])[0];
+            $level = $punkt->УровеньМеню;
+            $mens[$i] = $punkt;
+            $id = $punkt->ID;
+        }
+        $mens = array_reverse($mens);
+        $data['mens']=$mens;
+        $data['header']=true;
         //dd($data);
         return view('index',['data'=>$data]);
     }
@@ -126,7 +145,24 @@ class MenuController extends Controller
                                    FROM Menu WHERE [ID] = ?
                                    ORDER BY [Уровень меню], [Порядок отображения]',[$Id])[0]->УровеньМеню;
         $data['level']=$level+1;
+        $mens = [];
+        $mens[0] = DB::select("SELECT ID, Подчинённый, [Уровень меню] 'УровеньМеню', [Язык подчинённого] 'ЯзыкПодчинённого', Тип
+                                      FROM Menu WHERE ID=?",[$Id])[0];
+        $level = $mens[0]->УровеньМеню;
+        $i = 1;
+        while($level!=1)
+        {
+            $punkt = DB::select("SELECT [ID родителя] 'IDРодителя' FROM Menu WHERE ID=?",[$Id])[0]->IDРодителя;
+            $punkt = DB::select("SELECT ID, Подчинённый, [Уровень меню] 'УровеньМеню', [Язык подчинённого] 'ЯзыкПодчинённого',
+                                       Тип FROM Menu WHERE ID=?",[$punkt])[0];
+            $level = $punkt->УровеньМеню;
+            $mens[$i] = $punkt;
+            $id = $punkt->ID;
+        }
+        $mens = array_reverse($mens);
+        $data['mens']=$mens;
         $data['langs']=$langs;
+        //dd($data);
         return view('CreateMenu',['data'=>$data]);
     }
     public function EditMenu($name){
@@ -147,22 +183,37 @@ class MenuController extends Controller
         $langs = DB::select("SELECT [Id языка] 'IdЯзыка', Наименование
                                    FROM [Языки]");
         $data['langs'] = $langs;
+        $mens = [];
+        $mens[0] = DB::select("SELECT ID, Подчинённый, [Уровень меню] 'УровеньМеню', [Язык подчинённого] 'ЯзыкПодчинённого', Тип
+                                      FROM Menu WHERE ID=?",[$name])[0];
+        $level = $mens[0]->УровеньМеню;
+        $i = 1;
+        while($level!=1)
+        {
+            $punkt = DB::select("SELECT [ID родителя] 'IDРодителя' FROM Menu WHERE ID=?",[$name])[0]->IDРодителя;
+            $punkt = DB::select("SELECT ID, Подчинённый, [Уровень меню] 'УровеньМеню', [Язык подчинённого] 'ЯзыкПодчинённого',
+                                       Тип FROM Menu WHERE ID=?",[$punkt])[0];
+            $level = $punkt->УровеньМеню;
+            $mens[$i] = $punkt;
+            $name = $punkt->ID;
+        }
+        $mens = array_reverse($mens);
+        $data['mens']=$mens;
         return view('EditMenu',['data'=>$data]);
     }
     public function UpdateMenu($Id,Request $request){
         $date = getdate();
+        //dd($request);
         //$month = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октабря','ноября','декабря'];
         $text = '<!DOCTYPE HTML><html><head><meta charset=\"utf-8\"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">'.'<title>'.$request->input('name').'</title>'.'</head>'.'<body>'.
-            '<time datetime="'.$date['year'].'-'.$date['mon'].'-'.$date['mday'].'" title="'.($date['hours']+7).':'.$date['minutes'].', '
-            .$date['mday'].' '.$date['month'].' '. $date['year'].'">'/*.$date['mday'].' '.$month[$date['mon']-1].' '.$date['year']*/.'</time>'.
-            $request->input('text').'</body>'.'</html>';
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">'.'<title>'.$request->input('name').'</title>'.'</head>'.'<body>'.
+        $request->input('text').'</body>'.'</html>';
         $upper = DB::select('SELECT [ID родителя] "ID" FROM Menu WHERE ID = ?',[$request->input('ID')])[0]->ID;
-        DB::statement('EXECUTE UpdateMenu ?,?,?,?,?,?,?,?,?,?,?,?',[$request->input('ID'),
-            $request->input('name'),$request->input('Language'),$request->input('URL'),
-            $request->input('order'),$request->input('type'),$request->input('IDArticle'),
-            $request->input('namearticle'),$request->input('topicarticle'),$request->input('description'),
-            $request->input('idimage'),$text]);
+        DB::statement('EXECUTE UpdateMenu ?,?,?,?,?,?,?,?,?,?,?',
+            [$request->input('ID'), $request->input('name'), $request->input('Language'),
+            $request->input('URL'), $request->input('type'), $request->input('IDArticle'),
+            $request->input('namearticle'), $request->input('topicarticle'),
+            $request->input('description'), $request->input('idimage'),$text]);
         if($upper!=null)
             return redirect()->route('GetSubMenu',[$upper,$request->input('Language')]);
         else

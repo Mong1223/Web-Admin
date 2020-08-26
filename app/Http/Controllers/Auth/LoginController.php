@@ -4,7 +4,12 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
+use App\User;
+use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class LoginController extends Controller
 {
@@ -33,8 +38,27 @@ class LoginController extends Controller
      *
      * @return void
      */
+    public function username()
+    {
+        return 'Имя';
+    }
+
     public function __construct()
     {
         $this->middleware('guest')->except('logout');
+    }
+
+    public function login(Request $request)
+    {
+        $creditials = $request->only('Имя','Пароль');
+        //dd($request);
+        if(Auth::attempt(['Имя'=>$creditials['Имя'],'password'=>$creditials['Пароль']]))
+        {
+            return redirect()->intended('/home');
+        }
+        else
+        {
+            return redirect()->intended('dasboard');
+        }
     }
 }

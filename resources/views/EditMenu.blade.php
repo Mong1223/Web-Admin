@@ -12,8 +12,29 @@
         @endif
         <div class="row" style="margin-top: 2rem; margin-bottom: 4rem">
             <div class="col-md-2"></div>
-            <div class="col-md-6">
-                <h3>Изменение пункта меню</h3>
+            <div class="col-md-7" style="background: white; border: 1px solid #d7dfe3">
+                @isset($data['mens'])
+                    <div class="row" style="border-bottom: #5a6268 1px solid; background-color: white">
+                        <div class="col-md-12" style="margin-top: 0.6rem;">
+                            @for($i=0; $i<Count($data['mens']);$i++)
+                                @isset($data['mens'][$i])
+                                    @if($data['mens'][$i]->Тип=='LINKS_LIST')
+                                        <a style="text-decoration: none; color: black" href="{{route('GetSubMenu',[$data['mens'][$i]->ID,$data['mens'][$i]->ЯзыкПодчинённого])}}">{{$data['mens'][$i]->Подчинённый}}</a>
+                                    @endif
+                                    @if($data['mens'][$i]->Тип=='FEED_LIST')
+                                        <a style="color: black; text-decoration: none" href="{{route('GetNews',[$data['mens'][$i]->ID,$data['mens'][$i]->ЯзыкПодчинённого])}}">{{$data['mens'][$i]->Подчинённый}}</a>
+                                    @endif
+                                    @if($data['mens'][$i]->Тип!='FEED_LIST'&&$data['mens'][$i]->Тип!='LINKS_LIST')
+                                        <label style="color: #5a6268">{{$data['mens'][$i]->Подчинённый}}</label>
+                                    @endif
+                                    /
+                                @endisset
+                            @endfor
+                            <label style="color: #5a6268">Редактирование</label>
+                        </div>
+                    </div>
+                @endisset
+                <h3 style="padding-top: 0.6rem; padding-bottom: 0.6rem; border-bottom: #5a6268 1px solid">Изменение пункта меню</h3>
                 <form action="{{route('UpdateMenu',$data['menu']->ID)}}" method="post" enctype="multipart/form-data">
                     <meta name="csrf-token" content="{{ csrf_token() }}">
                     <input type="hidden" name="level" id="page" value="{{$data['menu']->УровеньМеню}}">

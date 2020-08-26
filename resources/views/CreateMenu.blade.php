@@ -12,8 +12,26 @@
         @endif
         <div class="row" style="margin-top: 2rem; margin-bottom: 4rem">
             <div class="col-md-2"></div>
-            <div class="col-md-6">
-                <h3>Добавление пункта меню</h3>
+            <div class="col-md-7" style="background: white; border: #d7dfe3 1px solid">
+                @isset($data['mens'])
+                    <div class="row" style="border-bottom: #5a6268 1px solid; background-color: white">
+                        <div class="col-md-12" style="margin-top: 0.6rem;">
+                            @for($i=0; $i<Count($data['mens']);$i++)
+                                @isset($data['mens'][$i])
+                                    @if($data['mens'][$i]->Тип=='LINKS_LIST')
+                                        <a style="text-decoration: none; color: black" href="{{route('GetSubMenu',[$data['mens'][$i]->ID,$data['mens'][$i]->ЯзыкПодчинённого])}}">{{$data['mens'][$i]->Подчинённый}}</a>
+                                    @endif
+                                    @if($data['mens'][$i]->Тип=='FEED_LIST')
+                                        <a style="color: black; text-decoration: none" href="{{route('GetNews',[$data['mens'][$i]->ID,$data['mens'][$i]->ЯзыкПодчинённого])}}">{{$data['mens'][$i]->Подчинённый}}</a>
+                                    @endif
+                                    /
+                                @endisset
+                            @endfor
+                            <label style="color: #5a6268">Пункты меню</label>
+                        </div>
+                    </div>
+                @endisset
+                <h3 style="padding-top: 0.6rem; padding-bottom: 0.6rem; border-bottom: #5a6268 1px solid">Добавление пункта меню</h3>
                 <form action="{{route('SaveMenu')}}" method="post" enctype="multipart/form-data">
                     <meta name="csrf-token" content="{{ csrf_token() }}">
                     @isset($data['uppermenu'])
@@ -23,14 +41,14 @@
                     <input type="hidden" name="level" id="page" value="{{$data['level']}}">
                     <div class="form-group">
                         <label for="name">Введите название</label><br>
-                        <input style="width: 30rem" type="text" name="name" id="name">
+                        <input style="width: 800px" type="text" name="name" id="name">
                     </div>
-                    @isset($data['menu']->IdРодителя)
-                        <input type="hidden" name="Language" id="language" value="{{$data['menu']->Язык}}">
+                    @isset($data['uppermenu']->ЯзыкПодчинённого)
+                        <input type="hidden" name="Language" id="language" value="{{$data['uppermenu']->ЯзыкПодчинённого}}">
                     @else
                         <div class="form-group">
                             <label for="Language">Введите язык</label><br>
-                            <select size="1" style="width: 30rem" name="Language">
+                            <select size="1" style="width: 800px" name="Language">
                                 @foreach($data['langs'] as $lang)
                                     <option value="{{$lang->Наименование}}">{{$lang->Наименование}}</option>
                                 @endforeach
@@ -45,7 +63,7 @@
                     </div>
                     <div class="form-group">
                         <label for="type">Тип пункта меню</label><br>
-                        <select name="type" size="1" style="width: 30rem" id="type">
+                        <select name="type" size="1" style="width: 800px" id="type">
                             <option value="ARTICLE">Статья</option>
                             <option value="LINK">Ссылка</option>
                             <option value="FEED_LIST" selected="selected">Список статей</option>
@@ -55,17 +73,17 @@
                     <div class="form-group" id="link" style="display: none">
                         <label>Введите ссылку</label><br>
                         {{csrf_field()}}
-                        <input type="text" name="link" style="width: 30rem" id="linktext">
+                        <input type="text" name="link" style="width: 800px" id="linktext">
                     </div>
                     <div id="menuarticle" style="display: none;">
                         <h3>Добавление статьи</h3>
                         <div class="form-group">
                             <label for="namearticle">Введите название</label><br>
-                            <input style="width: 30rem" type="text" name="namearticle" id="namearticle">
+                            <input style="width: 800px" type="text" name="namearticle" id="namearticle">
                         </div>
                         <div>
                             <label for="topicarticle">Введите тему</label><br>
-                            <input style="width: 30rem" type="text" name="topicarticle" id="topicarticle">
+                            <input style="width: 800px" type="text" name="topicarticle" id="topicarticle">
                         </div>
                         <div class="form-group" id="imagegroup">
                             <label for="file">Загрузите фотографию</label><br>
@@ -75,7 +93,7 @@
                         </div>
                         <div class="form-group">
                             <label for="description">Введите короткий текст</label><br>
-                            <textarea name="description" cols="55" rows="10" id="descriptionarticle"></textarea>
+                            <textarea name="description" cols="92" rows="10" id="descriptionarticle"></textarea>
                         </div>
                         <div class="form-group">
                             <label for="redactor">Введте текст</label><br>

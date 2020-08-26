@@ -54,6 +54,22 @@
                 </div>
                 <div class="menu-content" style="background-color: white">
                     @isset($data['menus'])
+                        <div class="row" style="border-bottom: #5a6268 1px solid; background-color: white">
+                            <div class="col-md-12" style="margin-top: 0.6rem;">
+                                @for($i=0; $i<Count($data['mens']);$i++)
+                                    @isset($data['mens'][$i])
+                                        @if($data['mens'][$i]->Тип=='LINKS_LIST')
+                                            <a style="text-decoration: none; color: black" href="{{route('GetSubMenu',[$data['mens'][$i]->ID,$data['mens'][$i]->ЯзыкПодчинённого])}}">{{$data['mens'][$i]->Подчинённый}}</a>
+                                        @endif
+                                        @if($data['mens'][$i]->Тип=='FEED_LIST')
+                                            <a style="color: black; text-decoration: none" href="{{route('GetNews',[$data['mens'][$i]->ID,$data['mens'][$i]->ЯзыкПодчинённого])}}">{{$data['mens'][$i]->Подчинённый}}</a>
+                                        @endif
+                                        /
+                                    @endisset
+                                @endfor
+                                <label style="color: #5a6268">Пункты меню</label>
+                            </div>
+                        </div>
                         <div class="row" style="background-color: white">
                             <h3 style="margin-top: 1rem; margin-left: 1rem">Пункты меню</h3>
                         </div>

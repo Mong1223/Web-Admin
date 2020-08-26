@@ -57,6 +57,20 @@
                         @foreach($data['listpages'] as $pages)
                             <div class="row">
                                 <div class="col-md-12 content">
+                                    <div class="row" style="margin-top: 0.6rem; border-bottom: #5a6268 1px solid">
+                                        <div class="col-md-12" style="margin-left: 0.8rem">
+                                            @for($i = 0; $i<Count($data['menus']);$i++)
+                                                @if($data['menus'][$i]->Тип=='LINKS_LIST')
+                                                    <a style="text-decoration: none; color: black" href="{{route('GetSubMenu',[$data['menus'][$i]->ID,$data['menus'][$i]->ЯзыкПодчинённого])}}">{{$data['menus'][$i]->Подчинённый}}</a>
+                                                @endif
+                                                @if($data['menus'][$i]->Тип=='FEED_LIST')
+                                                    <a style="color: black; text-decoration: none" href="{{route('GetNews',[$data['menus'][$i]->ID,$data['menus'][$i]->ЯзыкПодчинённого])}}">{{$data['menus'][$i]->Подчинённый}}</a>
+                                                @endif
+                                                /
+                                            @endfor
+                                            <label style="color: #5a6268">Страницы</label>
+                                        </div>
+                                    </div>
                                     <div class="row page-header">
                                         <div class="col-md-10">
                                             <h2 style="padding-top: 1rem; padding-left: 0.6rem">{{$pages->Страница}}</h2>
@@ -119,34 +133,6 @@
                         @endforeach
                     @endisset
                 </div>
-                <!--<div>
-                    //@isset($data['news'])
-                        //@foreach($data['news'] as $news)
-                            <div class="row">
-                                <div class="col-md-8" style="background: white; border: 1px solid black; border-radius: 4px; margin-bottom: 1rem">
-                                    <div class="row" style="padding-top: 1rem">
-                                        <div class="col-md-8">
-                                            <h4 style="padding-left: 0.6rem">{{$news['Статья']}}</h4>
-                                            <p style="padding-left: 0.6rem">{{$news['ВремяСозданияСтатьи']}}</p>
-                                            <p style="padding-left: 0.6rem">{{$news['Тематика']}}</p>
-                                            <p style="padding-left: 0.6rem">{{$news['КраткаяВерсия']}}</p>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <a class="btn btn-light" style="margin-top: 1rem">
-                                                Редактировать
-                                            </a>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <a href="{{route('DeleteNews',$news['IDСтатьи'])}}" class="btn btn-light" style="margin-top: 1rem; margin-left: 1rem">
-                                                Удалить
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        //@endforeach
-                    //@endisset
-                </div>-->
                 @isset($data['ПунктМеню'])
                     <div class="row">
                         <a class="btn btn-primary" href="{{route('CreatePage',[$data['ПунктМеню']->ID,$data['ПунктМеню']->ЯзыкПодчинённого])}}">
