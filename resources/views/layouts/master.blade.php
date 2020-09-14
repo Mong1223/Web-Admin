@@ -10,5 +10,6 @@
 <body>
 @include('includes.header')
 @yield('content')
+@include('includes.messages')
 </body>
 </html>

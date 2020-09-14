@@ -59,7 +59,6 @@
                         {{csrf_field()}}
                         <textarea name="text" cols="55" rows="10" id="redactor"></textarea>
                     </div>
-                    <a class="btn btn-primary" id="testbtn">Najmi</a>
                     <button type="submit" class="btn btn-light">Отправить</button>
                 </form>
             </div>

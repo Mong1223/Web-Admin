@@ -80,13 +80,13 @@ class MenuController extends Controller
         if($upper!=null){
             $idupper = DB::select('SELECT [ID] FROM Menu WHERE [Подчинённый]=?',[$upper])[0]->ID;
         }
-        $order = DB::select('SELECT MAX([Порядок отображения]) "ПорядокОтображения"
-                                   FROM Menu WHERE [Язык подчинённого]=? AND [Уровень меню] = ?',
-            [$request->input("lang".$langs[0]->Наименование),$request->input('level')])[0]->ПорядокОтображения;
+        $order = DB::select('SELECT COUNT(*) "Количество" FROM Menu
+                             WHERE [Язык подчинённого]=? AND [Уровень меню]=?',
+            [$request->input('Language'),$request->input('level')])[0]->Количество;
         if($request->input('type')=='LINK'){
             DB::statement('EXECUTE AddMenuItem ?,?,?,?,?,?,?',[$request->input('level'),$request->input("name"),
                 $upper,$request->input("Language"),$order,
-                $request->input('type'),$request->input('link')]);
+                $request->input('type'),$request->input('link'),$request->input('idimage')]);
         }
         if($request->input('type')=='ARTICLE'){
             $date = getdate();
@@ -99,7 +99,7 @@ class MenuController extends Controller
                      $date['year']*/.'</time>'. $request->input('text').'</body>'.'</html>';
             DB::statement('EXECUTE AddMenuItem ?,?,?,?,?,?,?',[$request->input('level'),$request->input("name"),
                 $upper,$request->input("Language"),$order,
-                $request->input('type'),null]);
+                $request->input('type'),null,$request->input('idimage')]);
             DB::statement('EXECUTE AddArticle ?,?,?,?,?,?',[$request->input('namearticle'),
                 $text,$request->input('topicarticle'),$request->input("Language"),
                 $request->input('description'),$request->input('idimage')]);
@@ -118,7 +118,7 @@ class MenuController extends Controller
             DB::statement('EXECUTE AddMenuItem ?,?,?,?,?,?,?',
                 [$request->input('level'),$request->input("name"),
                 $upper,$request->input("Language"),$order,
-                $request->input('type'),null]);
+                $request->input('type'),null,$request->input('idimage')]);
         }
         if($upper!=null)
             return redirect()->route('GetSubMenu',[$idupper,$request->input("Language")]);

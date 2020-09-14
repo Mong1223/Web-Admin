@@ -10,10 +10,24 @@
                 </ul>
             </div>
         @endif
-        <div class="row" style="margin-top: 2rem; margin-bottom: 4rem">
+        <div class="row" style="margin-top: 2rem; margin-bottom: 4rem;">
             <div class="col-md-2"></div>
-            <div class="col-md-6">
-                <h3>Добавление страницы</h3>
+            <div class="col-md-7" style="background: white; border: 1px solid #d7dfe3">
+                <div class="row" style="margin-top: 0.6rem; border-bottom: #5a6268 1px solid">
+                    <div class="col-md-12" style="margin-left: 0.8rem">
+                        @for($i = 0; $i<Count($data['menus']);$i++)
+                            @if($data['menus'][$i]->Тип=='LINKS_LIST')
+                                <a style="text-decoration: none; color: black" href="{{route('GetSubMenu',[$data['menus'][$i]->ID,$data['menus'][$i]->ЯзыкПодчинённого])}}">{{$data['menus'][$i]->Подчинённый}}</a>
+                            @endif
+                            @if($data['menus'][$i]->Тип=='FEED_LIST')
+                                <a style="color: black; text-decoration: none" href="{{route('GetNews',[$data['menus'][$i]->ID,$data['menus'][$i]->ЯзыкПодчинённого])}}">{{$data['menus'][$i]->Подчинённый}}</a>
+                            @endif
+                            /
+                        @endfor
+                        <label style="color: #5a6268">Добавление страницы</label>
+                    </div>
+                </div>
+                <h3 style="margin-top: 0.6rem;">Добавление страницы</h3>
                 <form action="{{route('SavePage')}}" method="post" enctype="multipart/form-data">
                     <meta name="csrf-token" content="{{ csrf_token() }}">
                     <input type="hidden" name="menuid" id="menuid" value="{{$data['menuid']}}">

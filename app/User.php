@@ -38,6 +38,8 @@ class User extends Authenticatable
         return 'Id Пользователя';
     }
 
+    protected $primaryKey = 'Id Пользователя';
+
     protected $fillable = [
         'Фамилия',
         'Имя',

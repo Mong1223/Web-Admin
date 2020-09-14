@@ -8,6 +8,7 @@ use App\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
@@ -68,7 +69,6 @@ class RegisterController extends Controller
      */
     public function register(Request $request)
     {
-        $user = new User();
         $data['name'] = $request->input('name');
         $data['secondname'] = $request->input('secondname');
         $data['thirdname'] = $request->input('thirdname');
@@ -80,6 +80,7 @@ class RegisterController extends Controller
         $data['provider'] = 'local';
         $data['confirm'] = 1;
         $this->create($data);
+        //$user = User::where('name',$request)->get();
         return redirect()->intended('dashboard');
     }
 

@@ -12,6 +12,8 @@ try {
 
     require('bootstrap');
     require('summernote');
+    require('jquery-ui');
+    require('jquery');
 } catch (e) {}
 
 /**

@@ -43,18 +43,21 @@ $(document).ready(function () {
         }
     });
     let hamburg = document.getElementById('hamburg');
-    hamburg.addEventListener('click',function () {
-        let sidebarcont = document.getElementById('sidebar-content');
-        let contentnav = document.getElementById('content-nav');
-        let main = document.getElementById('main');
-        sidebarcont.classList.toggle("d-none");
-        sidebarcont.classList.toggle("d-block");
-        contentnav.classList.toggle("col-md-1");
-        contentnav.classList.toggle("col-md-2");
-        contentnav.classList.toggle("sidebar-little");
-        main.classList.toggle("col-md-11");
-        main.classList.toggle("col-md-10");
-    });
+    if(hamburg!=null)
+    {
+        hamburg.addEventListener('click',function () {
+            let sidebarcont = document.getElementById('sidebar-content');
+            let contentnav = document.getElementById('content-nav');
+            let main = document.getElementById('main');
+            sidebarcont.classList.toggle("d-none");
+            sidebarcont.classList.toggle("d-block");
+            contentnav.classList.toggle("col-md-1");
+            contentnav.classList.toggle("col-md-2");
+            contentnav.classList.toggle("sidebar-little");
+            main.classList.toggle("col-md-11");
+            main.classList.toggle("col-md-10");
+        });
+    }
     let page = document.getElementsByClassName('article-title');
     for (var i=0;i<page.length;i++){
         page[i].addEventListener('click',function (event) {
@@ -63,6 +66,39 @@ $(document).ready(function () {
             div.classList.toggle("d-block");
         });
     }
+    let messagebtn = document.messages;
+    messagebtn.addEventListener('submit',function (event) {
+        event.preventDefault();
+        let text = document.messages.text;
+        let topic = document.messages.title;
+        let lang = document.messages.Language;
+        let emailmessage = document.messages.email;
+        let tokenmes = document.messages.token;
+        let data = {
+            language: lang.value,
+            title: topic.value,
+            message: text.value,
+            email: emailmessage.value,
+            token: tokenmes.value
+        };
+        data = JSON.stringify(data);
+        $.ajax({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            data: data,
+            dataType: "json",
+            type: "POST",
+            url: "https://internationals.tpu.ru:8080/api/notification",
+            success: function () {
+                alert('succes');
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert(textStatus);
+                alert(errorThrown);
+            }
+        });
+    });
     function sendFile(file, editor, welEditable) {
         datafile = new FormData();
         datafile.append("file",file);
@@ -87,32 +123,54 @@ $(document).ready(function () {
             }
         });
     }
+
+    let deletebutton = document.getElementsByClassName('delete-news-button');
+    for(var i=0;i<deletebutton.length;i++)
+    {
+        deletebutton[i].addEventListener('click',function deletefunc(event) {
+            if(confirm('Удалить?'))
+            {
+                if(confirm('Вы уверены? Удалить?'))
+                {
+                }
+                else {
+                    event.preventDefault();
+                }
+            }
+            else{
+                event.preventDefault();
+            }
+        });
+    }
 });
 let input = document.getElementById('image');
 let group = document.getElementById('imagegroup');
-input.addEventListener('change',function (event) {
-    let file = event.srcElement.files[0];
-    datafile = new FormData();
-    datafile.append("file",file);
-    $.ajax({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        },
-        data: datafile,
-        type: "POST",
-        url: '/SaveNews/SaveImage',
-        cache: false,
-        contentType: false,
-        processData: false,
-        async: true,
-        success: function (url) {
-            $('#imgfile').attr('src',url);
-            let id = url.substr(42);
-            $('#imgid').attr('value',id);
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-            alert(textStatus);
-            alert(errorThrown);
-        }
+if(input!=null)
+{
+    input.addEventListener('change',function (event) {
+        let file = event.srcElement.files[0];
+        datafile = new FormData();
+        datafile.append("file",file);
+        $.ajax({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            data: datafile,
+            type: "POST",
+            url: '/SaveNews/SaveImage',
+            cache: false,
+            contentType: false,
+            processData: false,
+            async: true,
+            success: function (url) {
+                $('#imgfile').attr('src',url);
+                let id = url.substr(49);
+                $('#imgid').attr('value',id);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert(textStatus);
+                alert(errorThrown);
+            }
+        });
     });
-});
+}

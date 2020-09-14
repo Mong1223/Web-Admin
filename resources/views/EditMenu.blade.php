@@ -86,7 +86,7 @@
                             <label for="file">Загрузите фотографию</label><br>
                             <input type="file" name="image" id="image">
                             <img id="imgfile" style="max-width:100%;height:auto;">
-                            <input name="idimage" type="hidden" id="imgid" src="@isset($data['article']->КартинкаСтатьи)http://109.123.155.178:8080/api/media/img/{{$data['article']->КартинкаСтатьи}}@endisset">
+                            <input name="idimage" type="hidden" id="imgid" src="@isset($data['article']->КартинкаСтатьи)https://internationals.tpu.ru:8080/api/media/img/{{$data['article']->КартинкаСтатьи}}@endisset">
                         </div>
                         <div class="form-group">
                             <label for="description">Введите короткий текст</label><br>

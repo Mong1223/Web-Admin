@@ -34,5 +34,6 @@ Route::get('/DeletePage/Name={Name}',['as'=>'DeletePage','uses'=>'PageController
 Route::post('/SavePage',['as'=>'SavePage','uses'=>'PageController@SavePage'])->middleware('auth');
 Route::post('/SaveNews',['as'=>'SaveNews','uses'=>'PageController@SaveNews'])->middleware('auth');
 Route::post('/SaveNews/SaveImage',['as'=>'SaveImage','uses'=>'PageController@SaveImage'])->middleware('auth');
-Route::get('EditNews/id={id}',['as'=>'EditNews','uses'=>'PageController@EditNews'])->middleware('auth');
+Route::get('/EditNews/id={id}',['as'=>'EditNews','uses'=>'PageController@EditNews'])->middleware('auth');
 Route::post('/UpdateNews/id={id}',['as'=>'UpdateNews','uses'=>'PageController@UpdateNews'])->middleware('auth');
+Route::get('/password/reset/{token}',['as'=>'passwordform','uses'=>'ResetPasswordController@ShowResetForm']);
