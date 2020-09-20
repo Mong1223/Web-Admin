@@ -36,4 +36,6 @@ Route::post('/SaveNews',['as'=>'SaveNews','uses'=>'PageController@SaveNews'])->m
 Route::post('/SaveNews/SaveImage',['as'=>'SaveImage','uses'=>'PageController@SaveImage'])->middleware('auth');
 Route::get('/EditNews/id={id}',['as'=>'EditNews','uses'=>'PageController@EditNews'])->middleware('auth');
 Route::post('/UpdateNews/id={id}',['as'=>'UpdateNews','uses'=>'PageController@UpdateNews'])->middleware('auth');
-Route::get('/password/reset/{token}',['as'=>'passwordform','uses'=>'ResetPasswordController@ShowResetForm']);
+Route::get('/password/reset/{token}',['as'=>'passwordform','uses'=>'UtilsController@ShowResetForm']);
+Route::post('/password/update',['as'=>'passwordupdate','uses'=>'UtilsController@reset']);
+Route::post('/messages/send',['as'=>'sendmessage','uses'=>'MessagesController@SendMessage'])->middleware('auth');

@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use function GuzzleHttp\Promise\all;
 
 class RegisterController extends Controller
 {
@@ -80,7 +81,8 @@ class RegisterController extends Controller
         $data['provider'] = 'local';
         $data['confirm'] = 1;
         $this->create($data);
-        //$user = User::where('name',$request)->get();
+        $user = User::all()->where('Имя','==',$request->input('name'))->first();
+        DB::statement('INSERT INTO [Электронная почта] VALUES(NEWID(),?,?)',[$request->input('email'), $user->{'Id Пользователя'}]);
         return redirect()->intended('dashboard');
     }
 

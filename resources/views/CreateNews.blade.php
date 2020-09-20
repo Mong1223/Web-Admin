@@ -38,26 +38,26 @@
                     <input type="hidden" name="IDMenu" value="{{$data['menu']->ID}}">
                     <div class="form-group">
                         <label for="name">Введите название</label><br>
-                        <input style="width: 800px" type="text" name="name" id="name">
+                        <input class="form-control" type="text" name="name" id="name">
                     </div>
                     <div>
                         <label for="topic">Введите тему</label><br>
-                        <input style="width: 800px" type="text" name="topic" id="topic">
+                        <input class="form-control" type="text" name="topic" id="topic">
                     </div>
                     <div class="form-group" id="imagegroup">
                         <label for="file">Загрузите фотографию</label><br>
-                        <input type="file" name="image" id="image"><br>
+                        <input class="form-control" type="file" name="image" id="image"><br>
                         <img id="imgfile" style="max-width:100%;height:auto;">
-                        <input name="idimage" type="hidden" id="imgid">
+                        <input class="form-control" name="idimage" type="hidden" id="imgid">
                     </div>
                     <div class="form-group">
                         <label for="text">Введите короткий текст</label><br>
-                        <textarea name="description" cols="92" rows="10" id="text"></textarea>
+                        <textarea class="form-control" name="description" id="text"></textarea>
                     </div>
                     <div class="form-group">
                         <label for="redactor">Введте текст</label><br>
                         {{csrf_field()}}
-                        <textarea name="text" cols="55" rows="10" id="redactor"></textarea>
+                        <textarea class="form-control" name="text" id="redactor"></textarea>
                     </div>
                     <button type="submit" class="btn btn-light">Отправить</button>
                 </form>

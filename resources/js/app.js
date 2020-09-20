@@ -1,8 +1,6 @@
 require('./bootstrap');
 $(document).ready(function () {
     $('#redactor').summernote({
-        height: 500,
-        width: 800,
         lang: 'ru-RU',
         callbacks: {
             onImageUpload: function (files,editor,welEditable) {
@@ -66,6 +64,11 @@ $(document).ready(function () {
             div.classList.toggle("d-block");
         });
     }
+    let messagesntbtn = document.getElementById('messagesend');
+    messagesntbtn.addEventListener('click',(event)=>{
+        let messageform = document.getElementById('card-cont');
+        messageform.classList.toggle('d-none');
+    });
     let messagebtn = document.messages;
     messagebtn.addEventListener('submit',function (event) {
         event.preventDefault();
@@ -74,24 +77,23 @@ $(document).ready(function () {
         let lang = document.messages.Language;
         let emailmessage = document.messages.email;
         let tokenmes = document.messages.token;
-        let data = {
-            language: lang.value,
-            title: topic.value,
-            message: text.value,
-            email: emailmessage.value,
-            token: tokenmes.value
-        };
-        data = JSON.stringify(data);
         $.ajax({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
-            data: data,
-            dataType: "json",
+            data: {
+                language: lang.value,
+                title: topic.value,
+                message: text.value,
+                email: emailmessage.value,
+                token: tokenmes.value
+            },
             type: "POST",
-            url: "https://internationals.tpu.ru:8080/api/notification",
-            success: function () {
+            url: '/messages/send',
+            success: function (req) {
                 alert('succes');
+                let card = document.getElementById('card-cont');
+                card.classList.toggle('d-none');
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 alert(textStatus);

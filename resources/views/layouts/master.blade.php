@@ -10,6 +10,8 @@
 <body>
 @include('includes.header')
 @yield('content')
-@include('includes.messages')
+@isset($data['menulangs'])
+    @include('includes.messages')
+@endisset
 </body>
 </html>

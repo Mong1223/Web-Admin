@@ -41,14 +41,14 @@
                     <input type="hidden" name="level" id="page" value="{{$data['level']}}">
                     <div class="form-group">
                         <label for="name">Введите название</label><br>
-                        <input style="width: 800px" type="text" name="name" id="name">
+                        <input class="form-control" type="text" name="name" id="name">
                     </div>
                     @isset($data['uppermenu']->ЯзыкПодчинённого)
                         <input type="hidden" name="Language" id="language" value="{{$data['uppermenu']->ЯзыкПодчинённого}}">
                     @else
                         <div class="form-group">
                             <label for="Language">Введите язык</label><br>
-                            <select size="1" style="width: 800px" name="Language">
+                            <select class="form-control" size="1" name="Language">
                                 @foreach($data['langs'] as $lang)
                                     <option value="{{$lang->Наименование}}">{{$lang->Наименование}}</option>
                                 @endforeach
@@ -57,13 +57,13 @@
                     @endisset
                     <div class="form-group" id="imagegroup">
                         <label for="file">Загрузите фотографию</label><br>
-                        <input type="file" name="image" id="image"><br>
+                        <input class="form-control" type="file" name="image" id="image"><br>
                         <img id="imgfile" style="max-width:100%;height:auto;">
-                        <input name="idimage" type="hidden" id="imgid">
+                        <input class="form-control" name="idimage" type="hidden" id="imgid">
                     </div>
                     <div class="form-group">
                         <label for="type">Тип пункта меню</label><br>
-                        <select name="type" size="1" style="width: 800px" id="type">
+                        <select class="form-control" name="type" size="1" id="type">
                             <option value="ARTICLE">Статья</option>
                             <option value="LINK">Ссылка</option>
                             <option value="FEED_LIST" selected="selected">Список статей</option>
@@ -73,32 +73,32 @@
                     <div class="form-group" id="link" style="display: none">
                         <label>Введите ссылку</label><br>
                         {{csrf_field()}}
-                        <input type="text" name="link" style="width: 800px" id="linktext">
+                        <input class="form-control" type="text" name="link" id="linktext">
                     </div>
                     <div id="menuarticle" style="display: none;">
                         <h3>Добавление статьи</h3>
                         <div class="form-group">
                             <label for="namearticle">Введите название</label><br>
-                            <input style="width: 800px" type="text" name="namearticle" id="namearticle">
+                            <input class="form-control" type="text" name="namearticle" id="namearticle">
                         </div>
                         <div>
                             <label for="topicarticle">Введите тему</label><br>
-                            <input style="width: 800px" type="text" name="topicarticle" id="topicarticle">
+                            <input class="form-control" type="text" name="topicarticle" id="topicarticle">
                         </div>
                         <div class="form-group" id="imagegroup">
                             <label for="file">Загрузите фотографию</label><br>
-                            <input type="file" name="image" id="image">
+                            <input class="form-control" type="file" name="image" id="image">
                             <img id="imgfile" style="max-width:100%;height:auto;">
-                            <input name="idimage" type="hidden" id="imgid">
+                            <input class="form-control" name="idimage" type="hidden" id="imgid">
                         </div>
                         <div class="form-group">
                             <label for="description">Введите короткий текст</label><br>
-                            <textarea name="description" cols="92" rows="10" id="descriptionarticle"></textarea>
+                            <textarea class="form-control" name="description" id="descriptionarticle"></textarea>
                         </div>
                         <div class="form-group">
                             <label for="redactor">Введте текст</label><br>
                             {{csrf_field()}}
-                            <textarea name="text" cols="55" rows="10" id="redactor"></textarea>
+                            <textarea class="form-control" name="text" id="redactor"></textarea>
                         </div>
                     </div>
                     <button type="submit" class="btn btn-light">Отправить</button>

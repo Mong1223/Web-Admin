@@ -35,7 +35,7 @@
                     <div class="form-group">
                         {{csrf_field()}}
                         <label for="name">Введите название</label><br>
-                        <input style="width: 30rem" type="text" name="name" id="name">
+                        <input class="form-control" type="text" name="name" id="name">
                     </div>
                     <button type="submit" class="btn btn-light">Отправить</button>
                 </form>

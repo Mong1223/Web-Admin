@@ -54,38 +54,40 @@ class LoginController extends Controller
     public function login(Request $request)
     {
         $creditials = $request->only('Имя','Пароль');
-        $bool = DB::select('SELECT Роль FROM Пользователь WHERE Имя=?',[$creditials['Имя']])[0]->Роль;
-        if($bool=='ROLE_ADMIN')
-        {
-            //ctk1@tpu.ru
-            if(Auth::attempt(['Имя'=>$creditials['Имя'],'password'=>$creditials['Пароль']],($request->input('remember')=='on') ? true : false))
-            {
-                $req = array(
-                    'email'=>'ctk1@tpu.ru',
-                    'password'=>$creditials['Пароль'],
-                );
-                $req = json_encode($req);
-                $curl = curl_init('https://internationals.tpu.ru:8080/api/token/web-admin');
-                curl_setopt($curl,CURLOPT_CUSTOMREQUEST,"POST");
-                curl_setopt($curl,CURLOPT_POSTFIELDS, $req);
-                curl_setopt($curl,CURLOPT_RETURNTRANSFER,true);
-                curl_setopt($curl,CURLOPT_HTTPHEADER,array(
-                    'Content-Type: application/json',
-                    'Content-Length: ' . strlen($req)
-                ));
-                $result = curl_exec($curl);
-                $this->token = $result;
-                curl_close($curl);
-                session(['token'=>$result]);
-                session(['email'=>'ctk1@tpu.ru']);
-                return redirect()->intended('/home');
+        $bool = DB::select('SELECT Роль FROM Пользователь WHERE Имя=?',[$creditials['Имя']]);
+        if($bool!=null) {
+            if ($bool[0]->Роль == 'ROLE_ADMIN') {
+                $user_id = DB::select('SELECT [Id пользователя] FROM [Пользователь] WHERE Имя = ?',[$creditials['Имя']])[0]->{'Id пользователя'};
+                $user_email = DB::select('SELECT Наименование FROM [Электронная почта] WHERE [Id пользователя] = ?',[$user_id])[0]->Наименование;
+                if (Auth::attempt(['Имя' => $creditials['Имя'], 'password' => $creditials['Пароль']], ($request->input('remember') == 'on') ? true : false)) {
+                    $req = array(
+                        'email' => $user_email,
+                        'password' => $creditials['Пароль'],
+                    );
+                    $req = json_encode($req);
+                    $curl = curl_init('https://internationals.tpu.ru:8080/api/token/web-admin');
+                    curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "POST");
+                    curl_setopt($curl, CURLOPT_POSTFIELDS, $req);
+                    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+                    curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+                        'Content-Type: application/json',
+                        'Content-Length: ' . strlen($req)
+                    ));
+                    $result = curl_exec($curl);
+                    $this->token = $result;
+                    curl_close($curl);
+                    session(['token' => $result]);
+                    session(['email' => 'ctk1@tpu.ru']);
+                    return redirect()->intended('/home');
+                }
+                else {
+                    return "Пароль неверный";
+                }
             }
-            else{
-                dd('Auth');
+            else {
+                return "Роль у вас не администраторская увы:(";
             }
-        }
-        else {
-                dd('Role');
+            return redirect()->intended('dasboard');
         }
         return redirect()->intended('dasboard');
     }

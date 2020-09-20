@@ -33,26 +33,26 @@
                     <input type="hidden" value="{{$data['news']->ПунктМеню}}" name="menupunct">
                     <div class="form-group">
                         <label for="name">Введите название</label><br>
-                        <input value="{{$data['news']->НазваниеСтатьи}}" style="width: 800px" type="text" name="name" id="name">
+                        <input value="{{$data['news']->НазваниеСтатьи}}" class="form-control" type="text" name="name" id="name">
                     </div>
                     <div>
                         <label for="topic">Введите тему</label><br>
-                        <input value="{{$data['news']->Тематика}}" style="width: 800px" type="text" name="topic" id="topic">
+                        <input value="{{$data['news']->Тематика}}" class="form-control" type="text" name="topic" id="topic">
                     </div>
                     <div class="form-group" id="imagegroup">
                         <label for="file">Загрузите фотографию</label><br>
-                        <input type="file" name="image" id="image"><br>
+                        <input class="form-control" type="file" name="image" id="image"><br>
                         <img id="imgfile" style="max-width:100%;height:auto;" src="@isset($data['news']->Картинка)https://internationals.tpu.ru:8080/api/media/img/{{$data['news']->Картинка}}@endisset">
-                        <input name="idimage" value="{{$data['news']->Картинка}}" type="hidden" id="imgid">
+                        <input class="form-control" name="idimage" value="{{$data['news']->Картинка}}" type="hidden" id="imgid">
                     </div>
                     <div class="form-group">
                         <label for="text">Введите короткий текст</label><br>
-                        <textarea name="description" cols="92" rows="10" id="text">{{$data['news']->КраткаяВерсия}}</textarea>
+                        <textarea name="description" class="form-control" id="text">{{$data['news']->КраткаяВерсия}}</textarea>
                     </div>
                     <div class="form-group">
                         <label for="redactor">Введте текст</label><br>
                         {{csrf_field()}}
-                        <textarea name="text" cols="55" rows="10" id="redactor">{{$data['news']->ТекстСтатьи}}</textarea>
+                        <textarea name="text" class="form-control" id="redactor">{{$data['news']->ТекстСтатьи}}</textarea>
                     </div>
                     <button type="submit" class="btn btn-light">Отправить</button>
                 </form>

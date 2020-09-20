@@ -48232,8 +48232,6 @@ __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 
 $(document).ready(function () {
   $('#redactor').summernote({
-    height: 500,
-    width: 800,
     lang: 'ru-RU',
     callbacks: {
       onImageUpload: function onImageUpload(files, editor, welEditable) {
@@ -48303,6 +48301,11 @@ $(document).ready(function () {
     });
   }
 
+  var messagesntbtn = document.getElementById('messagesend');
+  messagesntbtn.addEventListener('click', function (event) {
+    var messageform = document.getElementById('card-cont');
+    messageform.classList.toggle('d-none');
+  });
   var messagebtn = document.messages;
   messagebtn.addEventListener('submit', function (event) {
     event.preventDefault();
@@ -48311,24 +48314,23 @@ $(document).ready(function () {
     var lang = document.messages.Language;
     var emailmessage = document.messages.email;
     var tokenmes = document.messages.token;
-    var data = {
-      language: lang.value,
-      title: topic.value,
-      message: text.value,
-      email: emailmessage.value,
-      token: tokenmes.value
-    };
-    data = JSON.stringify(data);
     $.ajax({
       headers: {
         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
       },
-      data: data,
-      dataType: "json",
+      data: {
+        language: lang.value,
+        title: topic.value,
+        message: text.value,
+        email: emailmessage.value,
+        token: tokenmes.value
+      },
       type: "POST",
-      url: "https://internationals.tpu.ru:8080/api/notification",
-      success: function success() {
+      url: '/messages/send',
+      success: function success(req) {
         alert('succes');
+        var card = document.getElementById('card-cont');
+        card.classList.toggle('d-none');
       },
       error: function error(jqXHR, textStatus, errorThrown) {
         alert(textStatus);

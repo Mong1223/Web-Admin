@@ -71,6 +71,7 @@ class MenuController extends Controller
         $langs = DB::select('SELECT [Id языка] "ID", Наименование FROM Языки');
         $data['langs'] = $langs;
         $data['level'] = 1;
+        //dd($data);
         return view('CreateMenu',['data'=>$data]);
     }
     public function SaveMenu(Request $request){

@@ -45,14 +45,14 @@
                     @endisset
                     <div class="form-group">
                         <label for="name">Введите название</label><br>
-                        <input style="width: 30rem" type="text" name="name" id="name" value="{{$data['menu']->Подчинённый}}">
+                        <input class="form-control" type="text" name="name" id="name" value="{{$data['menu']->Подчинённый}}">
                     </div>
                     @isset($data['menu']->IdРодителя)
                         <input type="hidden" name="Language" id="language" value="{{$data['menu']->Язык}}">
                     @else
                         <div class="form-group">
                             <label for="Language">Введите язык</label><br>
-                            <select size="1" style="width: 30rem" name="Language">
+                            <select size="1" class="form-control" name="Language">
                                 @foreach($data['langs'] as $lang)
                                     <option value="{{$lang->Наименование}}">{{$lang->Наименование}}</option>
                                 @endforeach
@@ -61,7 +61,7 @@
                     @endisset
                     <div class="form-group">
                         <label for="type">Тип пункта меню</label><br>
-                        <select name="type" size="1" style="width: 30rem" id="type">
+                        <select name="type" size="1" class="form-control" id="type">
                             <option value="ARTICLE">Статья</option>
                             <option value="LINK">Ссылка</option>
                             <option value="FEED_LIST" selected="selected">Список статей</option>
@@ -70,32 +70,32 @@
                     </div>
                     <div class="form-group" id="link" style="display: none">
                         <label>Введите ссылку</label><br>
-                        <input type="text" name="link" style="width: 30rem" id="linktext" value="@isset($data['menu']->Ссылка){{$data['menu']->Ссылка}}@endisset">
+                        <input type="text" name="link" class="form-control" id="linktext" value="@isset($data['menu']->Ссылка){{$data['menu']->Ссылка}}@endisset">
                     </div>
                     <div id="menuarticle" style="display: none;">
                         <h3>Добавление статьи</h3>
                         <div class="form-group">
                             <label for="namearticle">Введите название</label><br>
-                            <input style="width: 30rem" type="text" name="namearticle" id="namearticle" value="@isset($data['article']){{$data['article']->Название}}@endisset">
+                            <input class="form-control" type="text" name="namearticle" id="namearticle" value="@isset($data['article']){{$data['article']->Название}}@endisset">
                         </div>
                         <div>
                             <label for="topicarticle">Введите тему</label><br>
-                            <input style="width: 30rem" type="text" name="topicarticle" id="topicarticle" value="@isset($data['article']){{$data['article']->Тематика}}@endisset">
+                            <input class="form-control" type="text" name="topicarticle" id="topicarticle" value="@isset($data['article']){{$data['article']->Тематика}}@endisset">
                         </div>
                         <div class="form-group" id="imagegroup">
                             <label for="file">Загрузите фотографию</label><br>
-                            <input type="file" name="image" id="image">
-                            <img id="imgfile" style="max-width:100%;height:auto;">
-                            <input name="idimage" type="hidden" id="imgid" src="@isset($data['article']->КартинкаСтатьи)https://internationals.tpu.ru:8080/api/media/img/{{$data['article']->КартинкаСтатьи}}@endisset">
+                            <input class="form-control" type="file" name="image" id="image">
+                            <img id="imgfile" style="max-width:100%;height:auto;" src="@isset($data['article']->Картинка)https://internationals.tpu.ru:8080/api/media/img/{{$data['article']->Картинка}}@endisset">
+                            <input class="form-control" name="idimage" type="hidden" id="imgid" src="@isset($data['article']->КартинкаСтатьи)https://internationals.tpu.ru:8080/api/media/img/{{$data['article']->КартинкаСтатьи}}@endisset">
                         </div>
                         <div class="form-group">
                             <label for="description">Введите короткий текст</label><br>
-                            <textarea name="description" cols="55" rows="10" id="descriptionarticle">@isset($data['article']){{$data['article']->КраткаяВерсия}}@endisset</textarea>
+                            <textarea name="description" class="form-control" id="descriptionarticle">@isset($data['article']){{$data['article']->КраткаяВерсия}}@endisset</textarea>
                         </div>
                         <div class="form-group">
                             <label for="redactor">Введте текст</label><br>
                             {{csrf_field()}}
-                            <textarea name="text" cols="55" rows="10" id="redactor">@isset($data['article']){{$data['article']->Текст}}@endisset</textarea>
+                            <textarea name="text" class="form-control" id="redactor">@isset($data['article']){{$data['article']->Текст}}@endisset</textarea>
                         </div>
                     </div>
                     <button type="submit" class="btn btn-light">Отправить</button>

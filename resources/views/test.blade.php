@@ -4,7 +4,7 @@
 <body>
     @isset($data)
     <p>
-        Error:{{$data->error}}
+        Error:{{$data->message}}
     </p>
     @else
         <p>
