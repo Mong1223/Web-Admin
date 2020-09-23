@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class UtilsController extends Controller
 {
@@ -33,5 +34,33 @@ class UtilsController extends Controller
         curl_close($curl);
         $result = json_decode($result);
         return view('test',['data'=>$result]);
+    }
+    public function userTable(){
+        $users = DB::select('SELECT [ID группы] "IDгруппы",[Номер группы] "НомерГруппы", [Идентификатор группы] "ИдентификаторГруппы"
+        From [Идентификатор учебной группы] "ИдентификаторГруппы"');
+
+        return view('userSet',['user' =>$users]);
+
+    }
+    public function editUserTable($id,$idg, Request $req){
+        $data['id']=$id;
+        $data['idg']=$idg;
+        //dd($req);
+        $inputs = $req->all();
+       // dd($inputs['idgroup']);
+        DB::statement('UPDATE [Идентификатор учебной группы] Set [Идентификатор группы] = ? where [Идентификатор группы] =? and [ID группы] = ?',[$inputs['idgroup'],$id,$idg]);
+        return redirect()->route('userSet');
+    }
+    public function ADDUserTable(Request $request){
+        $input = $request->all();
+
+        DB::statement('Insert into [Идентификатор учебной группы] ([ID группы],[Номер группы],[Идентификатор группы])
+                            Values(NEWID(),?,?)', [$input['group'],$input['idgroup']]);
+        return redirect()->route('userSet');
+    }
+    public function deleteGroup($id){
+        //dd($id);
+        DB::statement('Delete from [Идентификатор учебной группы] where [ID группы]=?',[$id]);
+        return redirect()->route('userSet');
     }
 }

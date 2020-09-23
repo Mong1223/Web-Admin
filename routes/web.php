@@ -39,3 +39,9 @@ Route::post('/UpdateNews/id={id}',['as'=>'UpdateNews','uses'=>'PageController@Up
 Route::get('/password/reset/{token}',['as'=>'passwordform','uses'=>'UtilsController@ShowResetForm']);
 Route::post('/password/update',['as'=>'passwordupdate','uses'=>'UtilsController@reset']);
 Route::post('/messages/send',['as'=>'sendmessage','uses'=>'MessagesController@SendMessage'])->middleware('auth');
+Route::get('/userSet','UtilsController@userTable')->name('userSet');
+Route::post('/editgroup/id={id}&idg={idg}', 'UtilsController@editUserTable')->name('editgroup');
+Route::post('/addnewgroup', 'UtilsController@ADDUserTable')->name('addnewgroup');
+Route::get('/deletegroup/id={id}',['as'=>'deletegroup','uses'=>'UtilsController@deleteGroup']);
+Route::get('/users','UsersController@getUsers')->name('users');
+Route::post('/users/uploadfile',['as'=>'upload','uses'=>'UsersController@uploadFiles']);

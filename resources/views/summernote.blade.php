@@ -10,24 +10,52 @@
     <script src="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.4/summernote.js"></script>
 </head>
 <body>
-<form method="POST" action="{{ route('summernote.post') }}">
-    {{ csrf_field() }}
-    <div class="col-xs-12 col-sm-12 col-md-12">
-        <div class="form-group">
-            <strong>Details:</strong>
-            <textarea class="form-control summernote" name="detail"></textarea>
+<div class="card-body">
+    <form enctype="multipart/form-data" name="documents" method="POST" action="{{route('upload')}}">
+        @csrf
+
+        <meta name="csrf-token" content="{{ csrf_token() }}">
+
+        <div class="form-group row">
+            <label for="title" class="col-md-4 col-form-label text-md-right">{{ __('Название документа') }}</label>
+
+            <div class="col-md-6">
+                <input id="title-message" type="text" class="form-control @error('title') is-invalid @enderror" name="name" value="{{ old('name') }}" required autocomplete="name" autofocus>
+
+                @error('title')
+                <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                @enderror
+            </div>
         </div>
-    </div>
-    <div class="col-xs-12 col-sm-12 col-md-12 text-center">
-        <button type="submit" class="btn btn-primary">Submit</button>
-    </div>
-</form>
+
+        <div class="form-group row">
+
+            <label for="text" class="col-md-4 col-form-label text-md-right">{{ __('Загрузка документа') }}</label>
+
+            <div class="col-md-6">
+                {{csrf_field()}}
+                <input type="file" id="fileid" name="file" class="form-control">
+
+                @error('thirdname')
+                <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                @enderror
+            </div>
+        </div>
+
+        <input type="hidden" name="id" value="A66E2E61-9A04-4FAB-8C9E-35DC02C42AB1">
+
+        <div class="form-group row mb-0">
+            <div class="col-md-6 offset-md-4">
+                <button id="send-document" type="submit" class="btn btn-primary">
+                    {{ __('Отправить') }}
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
 </body>
-<script type="text/javascript">
-    $(document).ready(function() {
-        $('.summernote').summernote({
-            height: 300,
-        });
-    });
-</script>
 </html>

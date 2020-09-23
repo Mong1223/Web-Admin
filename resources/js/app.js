@@ -70,37 +70,40 @@ $(document).ready(function () {
         messageform.classList.toggle('d-none');
     });
     let messagebtn = document.messages;
-    messagebtn.addEventListener('submit',function (event) {
-        event.preventDefault();
-        let text = document.messages.text;
-        let topic = document.messages.title;
-        let lang = document.messages.Language;
-        let emailmessage = document.messages.email;
-        let tokenmes = document.messages.token;
-        $.ajax({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            data: {
-                language: lang.value,
-                title: topic.value,
-                message: text.value,
-                email: emailmessage.value,
-                token: tokenmes.value
-            },
-            type: "POST",
-            url: '/messages/send',
-            success: function (req) {
-                alert('succes');
-                let card = document.getElementById('card-cont');
-                card.classList.toggle('d-none');
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                alert(textStatus);
-                alert(errorThrown);
-            }
+    if(messagebtn!=null)
+    {
+        messagebtn.addEventListener('submit',function (event) {
+            event.preventDefault();
+            let text = document.messages.text;
+            let topic = document.messages.title;
+            let lang = document.messages.Language;
+            let emailmessage = document.messages.email;
+            let tokenmes = document.messages.token;
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: {
+                    language: lang.value,
+                    title: topic.value,
+                    message: text.value,
+                    email: emailmessage.value,
+                    token: tokenmes.value
+                },
+                type: "POST",
+                url: '/messages/send',
+                success: function (req) {
+                    alert('succes');
+                    let card = document.getElementById('card-cont');
+                    card.classList.toggle('d-none');
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert(textStatus);
+                    alert(errorThrown);
+                }
+            });
         });
-    });
+    }
     function sendFile(file, editor, welEditable) {
         datafile = new FormData();
         datafile.append("file",file);
@@ -147,6 +150,67 @@ $(document).ready(function () {
 });
 let input = document.getElementById('image');
 let group = document.getElementById('imagegroup');
+let buttons = document.getElementsByClassName('filebtn');
+if(buttons!=null){
+    for(let i=0;i<buttons.length;i++)
+    {
+        buttons[i].addEventListener('click',function (event) {
+            if(document.documents.id.value!=undefined)
+            {
+                let idfield = document.documents.id;
+                idfield.parentNode.removeChild(idfield);
+                let header = document.getElementById('docheader');
+                header.innerText = 'Форма отправки документа';
+            }
+            let data = event.target.id.split(';');
+            let adddoc = document.getElementById('adddoc');
+            adddoc.classList.toggle('d-none');
+            let idinput = document.createElement('input');
+            idinput.type = 'hidden';
+            idinput.name = 'id'
+            idinput.value = data[0];
+            let form = document.documents;
+            form.appendChild(idinput);
+            let header = document.getElementById('docheader');
+            header.innerText = header.innerText + " для " + data[1];
+        });
+    }
+}
+let documentbtn = document.getElementById('send-document');
+if(documentbtn!=null)
+{
+    documentbtn.addEventListener('click',function (event) {
+        event.preventDefault();
+        let name = document.documents.name;
+        let id = document.documents.id;
+        let file = document.documents.document;
+        formData = new FormData();
+        formData.append("file", file.files[0]);
+        formData.append("name",name.value);
+        formData.append("id",id.value);
+        alert(formData);
+        $.ajax({
+            headers:{
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            data: formData,
+            type: 'POST',
+            url: '/users/uploadfile',
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function (data) {
+                alert('succes');
+                let datateg = document.createElement('div');
+                document.getElementById('adddoc').classList.toggle('d-none');
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert(textStatus);
+                alert(errorThrown);
+            }
+        });
+    });
+}
 if(input!=null)
 {
     input.addEventListener('change',function (event) {
@@ -174,5 +238,13 @@ if(input!=null)
                 alert(errorThrown);
             }
         });
+    });
+}
+let closebtn = document.getElementById('closeform');
+if(closebtn!=null){
+    closebtn.addEventListener('click',function (event) {
+        event.preventDefault();
+        let form = document.getElementById('adddoc');
+        form.classList.toggle('d-none');
     });
 }

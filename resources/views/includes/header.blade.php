@@ -34,11 +34,19 @@
             </a>
 
             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                <a class="dropdown-item" href="{{ route('logout') }}"
+                <a class="dropdown-item" href="{{ route('userSet') }}">
+                    Группы
+                </a>
+                <a class="dropdown-item" href="{{ route('users') }}">
+                    Отправка документов
+                </a>
+
+               <a class="dropdown-item" href="{{ route('logout') }}"
                    onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">
                     {{ __('Выход') }}
                 </a>
+
 
                 <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                     @csrf

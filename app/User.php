@@ -51,7 +51,8 @@ class User extends Authenticatable
         'ID языка',
         'refresh salt',
         'Provider',
-        'Подтвержден'
+        'Подтвержден',
+        'Номер группы'
     ];
 
     /**

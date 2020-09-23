@@ -48307,37 +48307,40 @@ $(document).ready(function () {
     messageform.classList.toggle('d-none');
   });
   var messagebtn = document.messages;
-  messagebtn.addEventListener('submit', function (event) {
-    event.preventDefault();
-    var text = document.messages.text;
-    var topic = document.messages.title;
-    var lang = document.messages.Language;
-    var emailmessage = document.messages.email;
-    var tokenmes = document.messages.token;
-    $.ajax({
-      headers: {
-        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-      },
-      data: {
-        language: lang.value,
-        title: topic.value,
-        message: text.value,
-        email: emailmessage.value,
-        token: tokenmes.value
-      },
-      type: "POST",
-      url: '/messages/send',
-      success: function success(req) {
-        alert('succes');
-        var card = document.getElementById('card-cont');
-        card.classList.toggle('d-none');
-      },
-      error: function error(jqXHR, textStatus, errorThrown) {
-        alert(textStatus);
-        alert(errorThrown);
-      }
+
+  if (messagebtn != null) {
+    messagebtn.addEventListener('submit', function (event) {
+      event.preventDefault();
+      var text = document.messages.text;
+      var topic = document.messages.title;
+      var lang = document.messages.Language;
+      var emailmessage = document.messages.email;
+      var tokenmes = document.messages.token;
+      $.ajax({
+        headers: {
+          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        data: {
+          language: lang.value,
+          title: topic.value,
+          message: text.value,
+          email: emailmessage.value,
+          token: tokenmes.value
+        },
+        type: "POST",
+        url: '/messages/send',
+        success: function success(req) {
+          alert('succes');
+          var card = document.getElementById('card-cont');
+          card.classList.toggle('d-none');
+        },
+        error: function error(jqXHR, textStatus, errorThrown) {
+          alert(textStatus);
+          alert(errorThrown);
+        }
+      });
     });
-  });
+  }
 
   function sendFile(file, editor, welEditable) {
     datafile = new FormData();
@@ -48380,6 +48383,70 @@ $(document).ready(function () {
 });
 var input = document.getElementById('image');
 var group = document.getElementById('imagegroup');
+var buttons = document.getElementsByClassName('filebtn');
+
+if (buttons != null) {
+  for (var i = 0; i < buttons.length; i++) {
+    buttons[i].addEventListener('click', function (event) {
+      if (document.documents.id.value != undefined) {
+        var idfield = document.documents.id;
+        idfield.parentNode.removeChild(idfield);
+
+        var _header = document.getElementById('docheader');
+
+        _header.innerText = 'Форма отправки документа';
+      }
+
+      var data = event.target.id.split(';');
+      var adddoc = document.getElementById('adddoc');
+      adddoc.classList.toggle('d-none');
+      var idinput = document.createElement('input');
+      idinput.type = 'hidden';
+      idinput.name = 'id';
+      idinput.value = data[0];
+      var form = document.documents;
+      form.appendChild(idinput);
+      var header = document.getElementById('docheader');
+      header.innerText = header.innerText + " для " + data[1];
+    });
+  }
+}
+
+var documentbtn = document.getElementById('send-document');
+
+if (documentbtn != null) {
+  documentbtn.addEventListener('click', function (event) {
+    event.preventDefault();
+    var name = document.documents.name;
+    var id = document.documents.id;
+    var file = document.documents.document;
+    formData = new FormData();
+    formData.append("file", file.files[0]);
+    formData.append("name", name.value);
+    formData.append("id", id.value);
+    alert(formData);
+    $.ajax({
+      headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+      },
+      data: formData,
+      type: 'POST',
+      url: '/users/uploadfile',
+      cache: false,
+      contentType: false,
+      processData: false,
+      success: function success(data) {
+        alert('succes');
+        var datateg = document.createElement('div');
+        document.getElementById('adddoc').classList.toggle('d-none');
+      },
+      error: function error(jqXHR, textStatus, errorThrown) {
+        alert(textStatus);
+        alert(errorThrown);
+      }
+    });
+  });
+}
 
 if (input != null) {
   input.addEventListener('change', function (event) {
@@ -48407,6 +48474,16 @@ if (input != null) {
         alert(errorThrown);
       }
     });
+  });
+}
+
+var closebtn = document.getElementById('closeform');
+
+if (closebtn != null) {
+  closebtn.addEventListener('click', function (event) {
+    event.preventDefault();
+    var form = document.getElementById('adddoc');
+    form.classList.toggle('d-none');
   });
 }
 
@@ -48481,8 +48558,8 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! D:\OSPanel\domains\webadmin\resources\js\app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! D:\OSPanel\domains\webadmin\resources\sass\app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! D:\OpenServer\domains\Web-Admin\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! D:\OpenServer\domains\Web-Admin\resources\sass\app.scss */"./resources/sass/app.scss");
 
 
 /***/ })
