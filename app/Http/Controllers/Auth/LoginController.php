@@ -77,7 +77,7 @@ class LoginController extends Controller
                     $this->token = $result;
                     curl_close($curl);
                     session(['token' => $result]);
-                    session(['email' => 'ctk1@tpu.ru']);
+                    session(['email' => $user_email]);
                     return redirect()->intended('/home');
                 }
                 else {

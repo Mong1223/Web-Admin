@@ -26,11 +26,11 @@ class UsersController extends Controller
         $filecontent = $file->openFile()->fread($file->getSize());
         $pdo = DB::connection()->getPdo();
         $filename = $file->getClientOriginalName();
-        $sql = "INSERT INTO [Документы]([ID документа], [Содержимое документа],[Название документа], [Название файла])
-                VALUES (:id, CONVERT(varbinary(max), :filecontent), :name, :originalname)";
+        $sql = "INSERT INTO [Документы]([ID документа], [Содержимое документа],[Название документа], [Название файла],[Дата загрузки документа])
+                VALUES (:id, CONVERT(varbinary(max), :filecontent), N'".$inputs["name"]."',N'".$filename."', GETDATE())";
         $stmt = $pdo->prepare($sql);
         $stmt->setAttribute(\PDO::SQLSRV_ATTR_ENCODING, \PDO::SQLSRV_ENCODING_SYSTEM);
-        $stmt->execute(array(':id'=>$mssqlid,':filecontent'=>$filecontent,':name'=>$inputs["name"],':originalname'=> $filename));
+        $stmt->execute(array(':id'=>$mssqlid,':filecontent'=>$filecontent));
         DB::statement('INSERT INTO [Документы пользователя] VALUES (?,?)',[$inputs["id"],$mssqlid]);
         return 'ok';
     }

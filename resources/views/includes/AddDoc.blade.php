@@ -20,7 +20,7 @@
                             <label for="title" class="col-md-4 col-form-label text-md-right">{{ __('Название документа') }}</label>
 
                             <div class="col-md-6">
-                                <input id="title-message" type="text" class="form-control @error('title') is-invalid @enderror" name="name" value="{{ old('name') }}" required autocomplete="name" autofocus>
+                                <input id="title-message" type="text" class="form-control @error('title') is-invalid @enderror" name="name" value="{{ old('name') }} " required  autocomplete="off" autofocus>
 
                                 @error('title')
                                 <span class="invalid-feedback" role="alert">
