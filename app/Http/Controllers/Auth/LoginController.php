@@ -78,7 +78,7 @@ class LoginController extends Controller
                     curl_close($curl);
                     session(['token' => $result]);
                     session(['email' => $user_email]);
-                    return redirect()->intended('/home');
+                    return redirect()->intended('/');
                 }
                 else {
                     return "Пароль неверный";

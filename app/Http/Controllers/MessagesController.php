@@ -16,6 +16,7 @@ class MessagesController extends Controller
             'email'=>$input["email"],
             'token'=>$input["token"],
         );
+
         $req = json_encode($req,JSON_UNESCAPED_UNICODE);
         $curl = curl_init('https://internationals.tpu.ru:8080/api/notification');
         curl_setopt($curl,CURLOPT_CUSTOMREQUEST,"POST");

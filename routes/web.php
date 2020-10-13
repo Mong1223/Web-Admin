@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Auth::routes();
-Route::get('/home', 'HomeController@index')->name('home')->middleware('auth');
+/*Route::get('/home', 'HomeController@index')->name('home')->middleware('auth');*/
 Route::get('/test',['as'=>'test','uses'=>function(){
     return view('test');
 }])->middleware('auth');
